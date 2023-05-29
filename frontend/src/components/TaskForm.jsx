@@ -39,13 +39,38 @@ const TaskForm = () => {
   };
 
   return (
-    <form className='create' onSubmit={handleSubmit}>
-      <h3>Add a New Task</h3>
-      <label>Title:</label>
-      <input type='text' onChange={(e) => setTitle(e.target.value)} value={title} />
-      <button>Submit</button>
-      {error && <div className='error'>{error}</div>}
-    </form>
+    <div
+      style={{
+        width: '70%',
+        height: '70vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <form
+        className='create'
+        onSubmit={handleSubmit}
+        style={{
+          width: '70%',
+          marginTop: '6vh',
+          height: '39vh',
+          border: '1px dashed lightgrey',
+          borderWidth: '4px',
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          alignItems: 'center',
+          padding: '54px',
+        }}
+      >
+        <h3>CREATE PROJECT BOARD</h3>
+        <input type='text' onChange={(e) => setTitle(e.target.value)} value={title} />
+        <button>Submit</button>
+        {error && <div className='error'>{error}</div>}
+      </form>
+    </div>
   );
 };
 

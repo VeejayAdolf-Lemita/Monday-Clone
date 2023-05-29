@@ -16,13 +16,13 @@ export const tasksReducer = (state, action) => {
     case 'DELETE_TASK':
       return {
         ...state,
-        tasks: state.tasks.filter((task) => task._id !== action.payload),
+        tasks: state.tasks.filter((task) => task.id !== action.payload),
       };
     case 'GET_SUBTASK':
       return {
         ...state,
         tasks: state.tasks.map((task) => {
-          if (task._id === taskId)
+          if (task.id === taskId)
             return {
               ...task,
               subtasks: data,
@@ -34,7 +34,7 @@ export const tasksReducer = (state, action) => {
       return {
         ...state,
         tasks: state.tasks.map((task) => {
-          if (task._id === taskId)
+          if (task.id === taskId)
             return {
               ...task,
               subtasks: [data, ...task.subtasks],
@@ -50,21 +50,20 @@ export const tasksReducer = (state, action) => {
           return {
             ...task,
             subtasks: task.subtasks.map((taskSubtask) => {
-              if (taskSubtask._id === updatedSubtask._id) return updatedSubtask;
+              if (taskSubtask.id === updatedSubtask.id) return updatedSubtask;
               else return taskSubtask;
             }),
           };
         }),
       };
     case 'DELETE_SUBTASK':
-      console.log(action.payload);
       return {
         ...state,
         tasks: state.tasks.map((task) => {
-          if (task._id === taskId)
+          if (task.id === taskId)
             return {
               ...task,
-              subtasks: task.subtasks.filter((subtask) => subtask._id !== subtaskId),
+              subtasks: task.subtasks.filter((subtask) => subtask.id !== subtaskId),
             };
           else return task;
         }),
@@ -73,14 +72,26 @@ export const tasksReducer = (state, action) => {
       return {
         ...state,
         tasks: state.tasks.map((task) => {
-          if (task._id === taskId) {
+          if (task.id === action.payload.taskId) {
+            // Use action.payload.taskId instead of taskId
             return {
               ...task,
               subtasks: task.subtasks.map((subtask) => {
-                if (subtask._id === subtaskId) {
+                if (subtask.id === action.payload.subtaskId) {
+                  // Use action.payload.subtaskId instead of subtaskId
                   return {
                     ...subtask,
-                    messages: data,
+                    messages: subtask.messages.map((message) => {
+                      if (message._id === action.payload.messageId) {
+                        // Use action.payload.messageId to find the correct message
+                        return {
+                          ...message,
+                          replies: action.payload.data.replies, // Update the replies for the message
+                        };
+                      } else {
+                        return message;
+                      }
+                    }),
                   };
                 } else {
                   return subtask;
@@ -92,31 +103,24 @@ export const tasksReducer = (state, action) => {
           }
         }),
       };
+
     case 'ADD_MESSAGE_TO_SUBTASK':
       const { user, messageContent } = action.payload;
       return {
         ...state,
         tasks: state.tasks.map((task) => {
-          if (task._id === taskId) {
-            return {
-              ...task,
-              subtasks: task.subtasks.map((subtask) => {
-                if (subtask._id === subtaskId) {
-                  return {
-                    ...subtask,
-                    messages: [
-                      ...subtask.messages,
-                      { sender: user.email, content: messageContent },
-                    ],
-                  };
-                } else {
-                  return subtask;
-                }
-              }),
-            };
-          } else {
-            return task;
-          }
+          return {
+            ...task,
+            subtasks: task.subtasks.map((subtask) => {
+              if (subtask.id === subtaskId) {
+                return {
+                  ...subtask,
+                  messages: [...subtask.messages, { sender: user?.email, content: messageContent }],
+                };
+              }
+              return subtask;
+            }),
+          };
         }),
       };
     default:

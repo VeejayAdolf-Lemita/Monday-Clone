@@ -1,20 +1,17 @@
-const { Task, Subtask } = require('../models/tasksModel');
+const { Task, Subtask, Message } = require('../models/tasksModel');
+const { uuid } = require('uuidv4');
 
 // GET all tasks
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({
-      $or: [
-        { member: req.user._id }, // Get tasks where the member field matches the user's ID
-        { 'subtasks.member': req.user._id }, // Get tasks where any subtask's member field matches the user's ID
-      ],
-    }).populate('member', 'title');
+    const tasks = await Task.find({ member: req.user.id });
+
+    console.log(tasks);
 
     // Only include subtasks that belong to the user
     tasks.forEach((task) => {
-      task.subtasks = task.subtasks.filter((subtask) => subtask.member.includes(req.user._id));
+      task.subtasks = task.subtasks.filter((subtask) => subtask.member === req.user.id);
     });
-
     res.json(tasks);
   } catch (err) {
     console.error(err.message);
@@ -26,10 +23,9 @@ const getTasks = async (req, res) => {
 const getTask = async (req, res) => {
   try {
     const task = await Task.findOne({
-      _id: req.params.id,
-      $or: [{ member: req.user._id }, { 'subtasks.member': req.user._id }],
+      id: req.params.id,
+      $or: [{ member: req.user.id }, { 'subtasks.member': req.user.id }],
     }).populate('member', 'title');
-
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
@@ -48,7 +44,7 @@ const getTask = async (req, res) => {
 const createTask = async (req, res) => {
   try {
     const { title, role } = req.body;
-    const task = new Task({ title, member: req.user._id, role }); // Include req.user._id in the member field
+    const task = new Task({ title, member: [req.user.id], role, id: uuid() });
     await task.save();
     res.json(task);
   } catch (err) {
@@ -60,7 +56,7 @@ const createTask = async (req, res) => {
 // DELETE a Task
 const deleteTask = async (req, res) => {
   try {
-    const task = await Task.findByIdAndRemove(req.params.id);
+    const task = await Task.deleteOne({ id: req.params.id });
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
@@ -99,7 +95,7 @@ const updateTask = async (req, res) => {
 // GET all Subtasks
 const getSubtasks = async (req, res) => {
   try {
-    const task = await Task.findOne({ _id: req.params.taskId, member: req.user._id }).populate(
+    const task = await Task.findOne({ id: req.params.taskId, member: req.user.id }).populate(
       'subtasks',
     );
 
@@ -116,14 +112,14 @@ const getSubtasks = async (req, res) => {
 
 const createSubtask = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.taskId);
+    const task = await Task.findOne({ id: req.params.taskId });
 
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
 
     const data = req.body;
-    const { memberId, name, description, role, status } = data;
+    const { name, description, role, status, member } = data;
 
     if (!name || !description || !role || !status) {
       return res.status(400).json({
@@ -132,14 +128,16 @@ const createSubtask = async (req, res) => {
     }
 
     const subtask = new Subtask({
+      id: uuid(),
       name,
-      member: task.member, // Assign the task's member field directly to the member field of the subtask
+      member, // Assign the task's member field directly to the member field of the subtask
       description,
       role,
       status,
     });
 
     task.subtasks.push(subtask);
+    task.member.indexOf(member) === -1 ? task.member.push(member) : null;
 
     await subtask.save();
     await task.save();
@@ -153,7 +151,7 @@ const createSubtask = async (req, res) => {
 
 const deleteSubtask = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.taskId);
+    const task = await Task.findOne({ id: req.params.taskId });
 
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
@@ -209,7 +207,7 @@ const getMessages = async (req, res) => {
   try {
     const { taskId, subtaskId } = req.params;
 
-    const task = await Task.findById(taskId);
+    const task = await Task.findOne({ id: taskId });
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
@@ -226,13 +224,13 @@ const getMessages = async (req, res) => {
   }
 };
 
-// Create a message for a subtask
 const createMessage = async (req, res) => {
   try {
     const { taskId, subtaskId } = req.params;
     const { sender, content } = req.body;
 
-    const task = await Task.findById(taskId);
+    const task = await Task.findOne({ id: taskId });
+
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
@@ -243,9 +241,11 @@ const createMessage = async (req, res) => {
     }
 
     const message = {
+      id: uuid, // Generate a unique ID for the message
       sender,
       content,
       timeSent: new Date(),
+      replies: [],
     };
 
     subtask.messages.push(message);
@@ -262,7 +262,7 @@ const getReplies = async (req, res) => {
   try {
     const { taskId, subtaskId, messageId } = req.params;
 
-    const task = await Task.findById(taskId);
+    const task = await Task.findOne({ id: taskId });
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
@@ -289,7 +289,8 @@ const createReply = async (req, res) => {
     const { taskId, subtaskId, messageId } = req.params;
     const { sender, content } = req.body;
 
-    const task = await Task.findById(taskId);
+    const task = await Task.findOne({ id: taskId });
+
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }
@@ -305,6 +306,7 @@ const createReply = async (req, res) => {
     }
 
     const reply = {
+      id: uuid, // Generate a unique ID for the reply
       sender,
       content,
       timeSent: new Date(),
@@ -321,12 +323,11 @@ const createReply = async (req, res) => {
   }
 };
 
-// Delete a message from a subtask
 const deleteMessage = async (req, res) => {
   try {
     const { taskId, subtaskId, messageId } = req.params;
 
-    const task = await Task.findById(taskId);
+    const task = await Task.findOne({ id: taskId });
     if (!task) {
       return res.status(404).json({ msg: 'Task not found' });
     }

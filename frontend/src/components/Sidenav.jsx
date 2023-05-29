@@ -13,7 +13,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AddBoxIcon from '@mui/icons-material/AddBox';
-import ChatIcon from '@mui/icons-material/Chat';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../appStore';
@@ -108,7 +107,7 @@ export default function SideNav() {
               >
                 <ChecklistIcon />
               </ListItemIcon>
-              <ListItemText primary='Tasks List' sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary='Project List' sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
           <Divider />
@@ -135,7 +134,7 @@ export default function SideNav() {
               >
                 <AddBoxIcon />
               </ListItemIcon>
-              <ListItemText primary='Add Task' sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary='Project Board' sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         </List>

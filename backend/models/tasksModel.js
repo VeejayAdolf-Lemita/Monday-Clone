@@ -34,16 +34,15 @@ const messageSchema = new Schema({
 });
 
 const subtaskSchema = new Schema({
+  id: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
   },
-  member: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
-  ],
+  member: String,
   description: {
     type: String,
     required: true,
@@ -54,23 +53,24 @@ const subtaskSchema = new Schema({
   },
   status: {
     type: String,
-    default: 'Todo',
+    default: 'Getting Started',
   },
   messages: [messageSchema],
 });
 
 const taskSchema = new Schema(
   {
+    id: {
+      type: String,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
     },
     completed: { type: Boolean, default: false },
     subtasks: [subtaskSchema],
-    member: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    member: Array,
   },
   { timestamps: true },
 );

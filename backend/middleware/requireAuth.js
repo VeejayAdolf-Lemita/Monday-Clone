@@ -14,7 +14,7 @@ const requireAuth = async (req, res, next) => {
   try {
     const { _id } = jwt.verify(token, process.env.SECRET);
 
-    req.user = await User.findOne({ _id }); // Populate the entire User document
+    req.user = await User.findById({ _id }); // Populate the entire User document
 
     if (!req.user) {
       return res.status(401).json({ error: 'User not found' });

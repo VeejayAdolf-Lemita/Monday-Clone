@@ -52,10 +52,8 @@ router.get('/:taskId/subtasks/:subtaskId/messages', getMessages);
 
 router.post('/:taskId/subtasks/:subtaskId/messages', createMessage);
 
-// GET REPLIES FOR A SPECIFIC MESSAGE
 router.get('/:taskId/subtasks/:subtaskId/messages/:messageId/replies', getReplies);
 
-// CREATE A REPLY TO A MESSAGE IN A SUBTASK
 router.post('/:taskId/subtasks/:subtaskId/messages/:messageId/replies', createReply);
 
 module.exports = router;

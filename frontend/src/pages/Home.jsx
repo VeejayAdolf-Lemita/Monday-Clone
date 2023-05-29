@@ -45,12 +45,24 @@ const Home = () => {
                 align='center'
                 color='text.primary'
                 gutterBottom
+                sx={{
+                  fontFamily: 'Poppins',
+                  fontWeight: 600,
+                  fontSize: '4rem',
+                  color: '#333333',
+                }}
               >
-                The platform for smarter work management
+                The platform built to power your work
               </Typography>
-              <Typography variant='h5' align='center' color='text.secondary' paragraph>
-                Make data-driven decisions, collaborate efficiently, and track progress with
-                software that adapts to your way of working.
+              <Typography
+                variant='h5'
+                align='center'
+                color='text.secondary'
+                paragraph
+                sx={{ fontSize: '1rem' }}
+              >
+                Work efficiently at scale with monday.com Work OS products, powered by a diverse
+                integration ecosystem, no-code automations, and the freedom to run any workflow.
               </Typography>
               <Stack sx={{ pt: 4 }} direction='row' spacing={2} justifyContent='center'>
                 <Link to='/login' style={{ textDecoration: 'none' }}>

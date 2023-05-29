@@ -5,13 +5,14 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Select, MenuItem, InputLabel, Box, FormControl } from '@mui/material';
 
 const SubtaskForm = ({ addSubtask }) => {
   const [name, setName] = useState('');
   const [member, setMember] = useState('');
   const [description, setDescription] = useState('');
   const [role, setRole] = useState('');
-  const [status, setStatus] = useState('Todo');
+  const [status, setStatus] = useState('Getting Started');
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const SubtaskForm = ({ addSubtask }) => {
       setMember('');
       setDescription('');
       setRole('');
-      setStatus('Todo');
+      setStatus('Getting Started');
     } catch (err) {
       console.error(err);
     }
@@ -51,7 +52,7 @@ const SubtaskForm = ({ addSubtask }) => {
         aria-controls='panel1a-content'
         id='panel1a-header'
       >
-        <Typography>SUBTASK FORM</Typography>
+        <Typography>ADD PROJECT</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Typography>
@@ -62,45 +63,79 @@ const SubtaskForm = ({ addSubtask }) => {
                 placeholder='Name'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                maxLength={20}
+                maxLength={25}
                 required
               />
             </div>
-            <div>
-              <select value={member} onChange={(e) => setMember(e.target.value)}>
-                <option value=''>Choose Member</option>
-                {users.map((user) => (
-                  <option key={user._id} value={user.email} required>
-                    {user.email}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+              <FormControl fullWidth>
+                <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                  Person
+                </InputLabel>
+                <Select
+                  id='demo-simple-select-label'
+                  labelId='demo-simple-select-label'
+                  value={member}
+                  label='Priority'
+                  onChange={(e) => setMember(e.target.value)}
+                >
+                  {users.map((user) => (
+                    <MenuItem key={user.id} value={user.id} required>
+                      {user.email}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
             <div>
               <input
                 type='text'
                 placeholder='Description'
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                maxLength={20}
                 required
               />
             </div>
             <div>
-              <input
-                type='text'
-                placeholder='Role'
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                required
-              />
+              <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+                <FormControl fullWidth>
+                  <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                    Priority
+                  </InputLabel>
+                  <Select
+                    id='demo-simple-select-label'
+                    labelId='demo-simple-select-label'
+                    value={role}
+                    label='Priority'
+                    onChange={(e) => setRole(e.target.value)}
+                  >
+                    <MenuItem value='Low'>Low</MenuItem>
+                    <MenuItem value='Mid'>Mid</MenuItem>
+                    <MenuItem value='High'>High</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </div>
             <div>
-              <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value='Todo'>To Do</option>
-                <option value='In progress'>In Progress</option>
-                <option value='Completed'>Done</option>
-              </select>
+              <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+                <FormControl fullWidth>
+                  <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                    Status
+                  </InputLabel>
+                  <Select
+                    id='demo-simple-select-label'
+                    labelId='demo-simple-select-label'
+                    value={status}
+                    label='Priority'
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <MenuItem value='Getting Started'>Getting Started</MenuItem>
+                    <MenuItem value='Working on it'>Working on it</MenuItem>
+                    <MenuItem value='Stuck'>Stuck</MenuItem>
+                    <MenuItem value='Done'>Done</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
             </div>
             <button type='submit'>Add Subtask</button>
           </form>

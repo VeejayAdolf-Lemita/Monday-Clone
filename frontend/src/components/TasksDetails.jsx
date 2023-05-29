@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import SideDrawer from './SideDrawer';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const TaskDetails = ({ task, subtasks }) => {
   const { user } = useAuthContext();
@@ -58,29 +59,31 @@ const TaskDetails = ({ task, subtasks }) => {
   useEffect(() => {
     const getSubtasks = async () => {
       try {
-        const res = await axios.get(`/api/tasks/${task._id}/subtasks`, {
+        const res = await axios.get(`/api/tasks/${task.id}/subtasks`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         });
-        dispatch({ type: 'GET_SUBTASK', payload: { data: res.data, taskId: task._id } });
+
+        console.log(res, 'response');
+        dispatch({ type: 'GET_SUBTASK', payload: { data: res.data, taskId: task.id } });
       } catch (err) {
         console.error(err.response.data);
       }
     };
     getSubtasks();
-  }, [task._id, dispatch, user.token]);
+  }, [task.id, dispatch, user.token]);
 
   async function addSubtask(newSubtask) {
     try {
       // Send POST request to create new subtask
-      const res = await axios.post(`/api/tasks/${task._id}/subtasks`, newSubtask, {
+      const res = await axios.post(`/api/tasks/${task.id}/subtasks`, newSubtask, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
 
-      dispatch({ type: 'CREATE_SUBTASK', payload: { data: res.data, taskId: task._id } });
+      dispatch({ type: 'CREATE_SUBTASK', payload: { data: res.data, taskId: task.id } });
     } catch (err) {
       console.error(err);
     }
@@ -88,13 +91,13 @@ const TaskDetails = ({ task, subtasks }) => {
 
   const deleteSubtask = async (subtaskId) => {
     try {
-      await axios.delete(`/api/tasks/${task._id}/subtasks/${subtaskId}`, {
+      await axios.delete(`/api/tasks/${task.id}/subtasks/${subtaskId}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
 
-      dispatch({ type: 'DELETE_SUBTASK', payload: { subtaskId, taskId: task._id } });
+      dispatch({ type: 'DELETE_SUBTASK', payload: { subtaskId, taskId: task.id } });
     } catch (err) {
       console.error(err.response.data);
     }
@@ -105,7 +108,7 @@ const TaskDetails = ({ task, subtasks }) => {
       return;
     }
 
-    const response = await fetch('/api/tasks/' + task._id, {
+    const response = await fetch('/api/tasks/' + task.id, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -116,19 +119,21 @@ const TaskDetails = ({ task, subtasks }) => {
       const deleteTask = (taskId) => {
         dispatch({ type: 'DELETE_TASK', payload: taskId });
       };
-      deleteTask(task._id); // Call the deleteTask function here
+      deleteTask(task.id); // Call the deleteTask function here
     }
   };
 
   const editSubtask = (subtaskId) => {
-    const subtaskToEdit = subtasks.find((subtask) => subtask._id === subtaskId);
-    setName(subtaskToEdit.name);
-    setMember(subtaskToEdit.member);
-    setDescription(subtaskToEdit.description);
-    setRole(subtaskToEdit.role);
-    setStatus(subtaskToEdit.status);
-    setSubtaskId(subtaskId);
-    setOpen(true);
+    const subtaskToEdit = subtasks.find((subtask) => subtask.id === subtaskId);
+    if (subtaskToEdit) {
+      setName(subtaskToEdit.name);
+      setMember(subtaskToEdit.member);
+      setDescription(subtaskToEdit.description);
+      setRole(subtaskToEdit.role);
+      setStatus(subtaskToEdit.status);
+      setSubtaskId(subtaskId);
+      setOpen(true);
+    }
   };
 
   const updateSubtask = async (e, subtaskId) => {
@@ -143,14 +148,15 @@ const TaskDetails = ({ task, subtasks }) => {
       dispatch({ type: 'UPDATE_SUBTASK', payload: res.data });
       handleClose();
     } catch (err) {
-      console.log(err);
+      console.error('Error updating subtask:', err);
+      // Handle the error appropriately
     }
   };
 
   return (
     <div className='task-details'>
       <h4>{task.title}</h4>
-      <SubtaskForm taskId={task._id} addSubtask={addSubtask} />
+      <SubtaskForm taskId={task.id} addSubtask={addSubtask} />
       {subtasks?.length > 0 ? (
         <>
           <Modal
@@ -173,7 +179,7 @@ const TaskDetails = ({ task, subtasks }) => {
                 <div>
                   <select value={member} onChange={(e) => setMember(e.target.value)}>
                     {users.map((user) => (
-                      <option key={user._id} value={user.email}>
+                      <option key={user.id} value={user.email}>
                         {user.email}
                       </option>
                     ))}
@@ -216,27 +222,32 @@ const TaskDetails = ({ task, subtasks }) => {
               <tr>
                 <th>Name</th>
                 <th style={{ width: '40px' }}></th>
-                <th>Person</th>
+                <th style={{ maxWidth: '40px', textAlign: 'center' }}>Person</th>
                 <th>Description</th>
-                <th>Role</th>
+                <th>Priority</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {subtasks.map((subtask) => (
-                <tr key={subtask._id}>
+                <tr key={subtask.id}>
                   <td>{subtask.name}</td>
                   <td style={{ width: '40px', cursor: 'pointer' }}>
                     <SideDrawer subtask={subtask} task={task} />
                   </td>
-                  <td>{subtask.member}</td>
+                  <td
+                    style={{ maxWidth: '40px', textAlign: 'center', cursor: 'pointer' }}
+                    onClick={(handleOpen, () => editSubtask(subtask.id))}
+                  >
+                    <AccountCircleIcon />
+                  </td>
                   <td>{subtask.description}</td>
                   <td>{subtask.role}</td>
                   <td>{subtask.status}</td>
                   <td>
                     <EditIcon
-                      onClick={(handleOpen, () => editSubtask(subtask._id))}
+                      onClick={(handleOpen, () => editSubtask(subtask.id))}
                       style={{
                         color: '#fff',
                         marginRight: '5px',
@@ -247,7 +258,7 @@ const TaskDetails = ({ task, subtasks }) => {
                       }}
                     />
                     <DeleteForeverIcon
-                      onClick={() => deleteSubtask(subtask._id)}
+                      onClick={() => deleteSubtask(subtask.id)}
                       style={{
                         color: '#fff',
                         cursor: 'pointer',

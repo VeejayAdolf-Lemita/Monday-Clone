@@ -29,15 +29,14 @@ const SideDrawer = ({ subtask, task }) => {
   const { dispatch } = useTasksContext();
   const [isDrawOpen, setIsDrawOpen] = useState(false);
   const [value, setValue] = useState(0);
-  const [messageContent, setMessageContent] = useState();
+  const [messageContent, setMessageContent] = useState('');
   const [selectedMessageId, setSelectedMessageId] = useState(null);
   const [replyContent, setReplyContent] = useState('');
 
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [dispatch, isDrawOpen]);
 
-  console.log(subtask._id);
   const addMessageToSubtask = async () => {
     try {
       if (!messageContent) {
@@ -47,9 +46,9 @@ const SideDrawer = ({ subtask, task }) => {
       }
 
       const res = await axios.post(
-        `/api/tasks/${task._id}/subtasks/${subtask._id}/messages`,
+        `/api/tasks/${task.id}/subtasks/${subtask.id}/messages`,
         {
-          sender: user.email,
+          sender: user?.email,
           content: messageContent,
         },
         {
@@ -61,12 +60,17 @@ const SideDrawer = ({ subtask, task }) => {
 
       dispatch({
         type: 'ADD_MESSAGE_TO_SUBTASK',
-        payload: { data: res.data, taskId: task._id },
+        payload: {
+          data: res.data,
+          taskId: task.id,
+          subtaskId: subtask.id,
+        },
       });
-      // Handle the response or perform additional actions as needed
+
+      // Reload messages
+      fetchMessages();
 
       // Clear the message content
-      fetchMessages();
       setMessageContent('');
     } catch (error) {
       console.error('Error adding message:', error);
@@ -82,8 +86,9 @@ const SideDrawer = ({ subtask, task }) => {
         return;
       }
 
-      const res = await axios.post(
-        `/api/tasks/${task._id}/subtasks/${subtask._id}/messages/${messageId}/replies`,
+      // POST request
+      const postResponse = await axios.post(
+        `/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
         {
           sender: user.email,
           content: replyContent,
@@ -95,56 +100,77 @@ const SideDrawer = ({ subtask, task }) => {
         },
       );
 
+      // Dispatch action to add the reply to the message
       dispatch({
         type: 'ADD_REPLY_TO_MESSAGE',
-        payload: { data: res.data, taskId: task._id, subtaskId: subtask._id, messageId },
+        payload: {
+          data: postResponse.data,
+          taskId: task.id,
+          subtaskId: subtask.id,
+          messageId,
+        },
       });
-
       // Clear the reply content
       setReplyContent('');
+      fetchMessages();
       setSelectedMessageId(null);
+
+      // GET request
+      const getResponse = await axios.get(
+        `/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        },
+      );
+
+      // Handle the GET response as needed
+      console.log('GET response:', getResponse.data);
     } catch (error) {
       console.error('Error adding reply:', error);
       // Handle the error appropriately
     }
   };
+
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`/api/tasks/${task._id}/subtasks/${subtask._id}/messages`, {
+      const res = await axios.get(`/api/tasks/${task.id}/subtasks/${subtask.id}/messages`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
 
-      // Check if there are new messages
-      const existingMessages = subtask.messages || [];
-      if (existingMessages.length !== res.data.length) {
-        // Fetch replies for each message
-        const messagesWithReplies = await Promise.all(
-          res.data.map(async (message) => {
-            const replyRes = await axios.get(
-              `/api/tasks/${task._id}/subtasks/${subtask._id}/messages/${message._id}/replies`,
-              {
-                headers: {
-                  Authorization: `Bearer ${user.token}`,
-                },
+      for (const message of res.data) {
+        try {
+          const replyRes = await axios.get(
+            `/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${message._id}/replies`,
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}`,
               },
-            );
-            return {
-              ...message,
-              replies: replyRes.data,
-            };
-          }),
-        );
+            },
+          );
 
-        dispatch({
-          type: 'SET_MESSAGES',
-          payload: {
-            taskId: task._id,
-            subtaskId: subtask._id,
-            data: messagesWithReplies,
-          },
-        });
+          // Update the replies for the message
+          const updatedMessage = {
+            ...message,
+            replies: replyRes.data,
+          };
+
+          dispatch({
+            type: 'SET_MESSAGES',
+            payload: {
+              taskId: task.id,
+              subtaskId: subtask.id,
+              messageId: updatedMessage._id,
+              data: updatedMessage,
+            },
+          });
+        } catch (error) {
+          console.error(`Error fetching replies for message ${message._id}:`, error);
+          // Handle the error appropriately
+        }
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -154,7 +180,7 @@ const SideDrawer = ({ subtask, task }) => {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault();
+      // event.preventDefault();
       addMessageToSubtask();
     }
   };
@@ -169,7 +195,6 @@ const SideDrawer = ({ subtask, task }) => {
   const handleReplyKeyDown = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      addMessageToSubtask();
       addReplyToMessage(selectedMessageId);
     }
   };
@@ -215,7 +240,7 @@ const SideDrawer = ({ subtask, task }) => {
             {subtask && subtask.messages && subtask.messages.length > 0 ? (
               subtask.messages.map((message) => (
                 <div style={{ margin: '0 auto 16px auto', maxWidth: '40vw' }}>
-                  <Box sx={{ border: '1px solid lightgrey', borderRadius: '4px', padding: '8px' }}>
+                  <Box sx={{ border: '1px solid #00000054', borderRadius: '4px', padding: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                       <AccountCircleIcon sx={{ fontSize: 50, color: '#3e753e' }} />
                       <span>{message.sender}</span>
