@@ -10,6 +10,7 @@ import { Select, MenuItem, InputLabel, Box, FormControl } from '@mui/material';
 const SubtaskForm = ({ addSubtask }) => {
   const [name, setName] = useState('');
   const [member, setMember] = useState('');
+  const [selectedMember, setSelectedMember] = useState(null);
   const [description, setDescription] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('Getting Started');
@@ -32,7 +33,14 @@ const SubtaskForm = ({ addSubtask }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newSubtask = { name, member, description, role, status };
+    const newSubtask = {
+      name,
+      memberEmail: selectedMember ? selectedMember.email : '',
+      member,
+      description,
+      role,
+      status,
+    };
     try {
       await addSubtask(newSubtask);
       setName('');
@@ -77,7 +85,12 @@ const SubtaskForm = ({ addSubtask }) => {
                   labelId='demo-simple-select-label'
                   value={member}
                   label='Priority'
-                  onChange={(e) => setMember(e.target.value)}
+                  onChange={(e) => {
+                    const selectedMemberId = e.target.value;
+                    const selectedMember = users.find((user) => user.id === selectedMemberId);
+                    setSelectedMember(selectedMember);
+                    setMember(selectedMemberId);
+                  }}
                 >
                   {users.map((user) => (
                     <MenuItem key={user.id} value={user.id} required>

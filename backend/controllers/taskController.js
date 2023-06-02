@@ -1,5 +1,6 @@
 const { Task, Subtask, Message } = require('../models/tasksModel');
 const { uuid } = require('uuidv4');
+const nodemailer = require('nodemailer');
 
 // GET all tasks
 const getTasks = async (req, res) => {
@@ -119,7 +120,7 @@ const createSubtask = async (req, res) => {
     }
 
     const data = req.body;
-    const { name, description, role, status, member } = data;
+    const { name, memberEmail, description, role, status, member } = data;
 
     if (!name || !description || !role || !status) {
       return res.status(400).json({
@@ -130,6 +131,7 @@ const createSubtask = async (req, res) => {
     const subtask = new Subtask({
       id: uuid(),
       name,
+      memberEmail,
       member, // Assign the task's member field directly to the member field of the subtask
       description,
       role,
@@ -141,6 +143,28 @@ const createSubtask = async (req, res) => {
 
     await subtask.save();
     await task.save();
+
+    try {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'lemvee11@gmail.com',
+          pass: 'bboyrscdkzcrejer',
+        },
+      });
+
+      const message = {
+        from: 'lemvee11@gmail.com',
+        to: `${memberEmail}`,
+        subject: 'New Subtask Created',
+        text: `A new subtask "${name}" has been created for task "${task.title}".`,
+      };
+
+      const mail = await transporter.sendMail(message);
+      console.log(mail, 'Email has been sent');
+    } catch (err) {
+      console.log(err, 'There was a problem sending an email');
+    }
 
     res.send(subtask);
   } catch (err) {

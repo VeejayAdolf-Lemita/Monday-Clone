@@ -42,6 +42,7 @@ const subtaskSchema = new Schema({
     type: String,
     required: true,
   },
+  memberEmail: String,
   member: String,
   description: {
     type: String,
