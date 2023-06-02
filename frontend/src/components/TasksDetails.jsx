@@ -11,8 +11,13 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import SideDrawer from './SideDrawer';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { FormControl, MenuItem, Select, InputLabel, TextField, Button } from '@mui/material';
+import AddToDriveIcon from '@mui/icons-material/AddToDrive';
+import useDrivePicker from 'react-google-drive-picker';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const TaskDetails = ({ task, subtasks }) => {
+  const [openPicker] = useDrivePicker();
   const { user } = useAuthContext();
   const [name, setName] = useState('');
   const [users, setUsers] = useState([]);
@@ -25,17 +30,103 @@ const TaskDetails = ({ task, subtasks }) => {
   const [subtaskId, setSubtaskId] = useState('');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [openModal2, setOpenModal2] = useState(false); // Added modal state
+  const handleOpenModal2 = () => setOpenModal2(true);
+  const handleCloseModal2 = () => setOpenModal2(false);
+  const [fileId, setFileId] = useState('');
+  const [newOwnerEmail, setNewOwnerEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState('');
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        '/transfer-ownership',
+        {
+          fileId: fileId,
+          newOwnerEmail: newOwnerEmail,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setFileId('');
+      setNewOwnerEmail('');
+      alert(`Ownership transferred to ${newOwnerEmail} successfully`);
+      handleCloseModal2();
+      console.log(response.data);
+      setIsLoading(false);
+    } catch (err) {
+      setFileId('');
+      setNewOwnerEmail('');
+      handleCloseModal2();
+      console.log(`Error transferring ownership: ${err}`);
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenPicker = () => {
+    const refreshToken =
+      '1//04Gtlnxwb9rpZCgYIARAAGAQSNwF-L9IrLqph8i-20DMjXKxUCBeE4jzNnl4nkuz_fh8B0cI0Wxlc4hQGqs2WOAzqS0QJh3An4ZE';
+    const clientSecret = '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';
+    const clientId = '141276615955-agrh2cdhddbgt9rh70hk7nvoldgs85sc.apps.googleusercontent.com';
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'user-agent': 'google-oauth-playground',
+      },
+      body: `client_secret=${encodeURIComponent(
+        clientSecret,
+      )}&grant_type=refresh_token&refresh_token=${encodeURIComponent(
+        refreshToken,
+      )}&client_id=${encodeURIComponent(clientId)}`,
+    };
+    fetch('https://oauth2.googleapis.com/token', requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        const newToken = data.access_token;
+        openPicker({
+          clientId: clientId,
+          developerKey: 'AIzaSyA8-dSoevc1HI-1ClrPo0Iql3oWT8GBzsA',
+          viewId: 'DOCS_AND_FOLDERS',
+          token: newToken,
+          showUploadView: true,
+          showUploadFolders: true,
+          setOwnedByMe: false,
+          supportDrives: true,
+          multiselect: true,
+          callbackFunction: (data) => {
+            if (data.action === 'cancel') {
+              console.log('User clicked cancel/close button');
+              setToken(newToken);
+            } else if (data.action === 'picked') {
+              setFileId(data.docs[0]['id']);
+              handleOpenModal2();
+            }
+            console.log(data);
+          },
+        });
+      })
+      .catch((error) => console.log('Error:', error));
+  };
 
   const { tasks } = useTasksContext();
 
   const style = {
+    border: '0',
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
+    borderRadius: 4,
     boxShadow: 24,
     p: 4,
   };
@@ -155,6 +246,54 @@ const TaskDetails = ({ task, subtasks }) => {
 
   return (
     <div className='task-details'>
+      <Modal
+        open={openModal2}
+        onClose={handleCloseModal2}
+        aria-labelledby='modal-modal-title'
+        aria-describedby='modal-modal-description'
+      >
+        {!isLoading ? (
+          <Box sx={style}>
+            <form onSubmit={handleSubmit}>
+              <TextField
+                id='fileId'
+                label='File ID'
+                value={fileId}
+                onChange={(event) => setFileId(event.target.value)}
+                margin='normal'
+                variant='outlined'
+                fullWidth
+                required
+              />
+              <TextField
+                id='newOwnerEmail'
+                label='New Owner Email'
+                value={newOwnerEmail}
+                onChange={(event) => setNewOwnerEmail(event.target.value)}
+                margin='normal'
+                variant='outlined'
+                fullWidth
+                required
+              />
+              <Button type='submit' variant='contained'>
+                Transfer Ownership
+              </Button>
+            </form>
+          </Box>
+        ) : (
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              padding: 50,
+            }}
+          >
+            <CircularProgress sx={{ color: '#fff' }} />
+          </div>
+        )}
+      </Modal>
       <h4>{task.title}</h4>
       <SubtaskForm taskId={task.id} addSubtask={addSubtask} />
       {subtasks?.length > 0 ? (
@@ -166,6 +305,7 @@ const TaskDetails = ({ task, subtasks }) => {
             aria-describedby='modal-modal-description'
           >
             <Box sx={style}>
+              <h1 style={{ textAlign: 'center' }}>Edit Project</h1>
               <form onSubmit={updateSubtask}>
                 <div>
                   <input
@@ -177,13 +317,26 @@ const TaskDetails = ({ task, subtasks }) => {
                   />
                 </div>
                 <div>
-                  <select value={member} onChange={(e) => setMember(e.target.value)}>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.email}>
-                        {user.email}
-                      </option>
-                    ))}
-                  </select>
+                  <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+                    <FormControl fullWidth>
+                      <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                        Person
+                      </InputLabel>
+                      <Select
+                        id='demo-simple-select-label'
+                        labelId='demo-simple-select-label'
+                        value={member}
+                        label='Priority'
+                        onChange={(e) => setMember(e.target.value)}
+                      >
+                        {users.map((user) => (
+                          <MenuItem key={user.id} value={user.id} required>
+                            {user.email}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </div>
                 <div>
                   <input
@@ -196,20 +349,45 @@ const TaskDetails = ({ task, subtasks }) => {
                   />
                 </div>
                 <div>
-                  <input
-                    type='text'
-                    placeholder='Role'
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    required
-                  />
+                  <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+                    <FormControl fullWidth>
+                      <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                        Priority
+                      </InputLabel>
+                      <Select
+                        id='demo-simple-select-label'
+                        labelId='demo-simple-select-label'
+                        value={role}
+                        label='Priority'
+                        onChange={(e) => setRole(e.target.value)}
+                      >
+                        <MenuItem value='Low'>Low</MenuItem>
+                        <MenuItem value='Mid'>Mid</MenuItem>
+                        <MenuItem value='High'>High</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </div>
                 <div>
-                  <select value={status} onChange={(e) => setStatus(e.target.value)}>
-                    <option value='Todo'>To Do</option>
-                    <option value='In progress'>In Progress</option>
-                    <option value='Completed'>Done</option>
-                  </select>
+                  <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+                    <FormControl fullWidth>
+                      <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                        Status
+                      </InputLabel>
+                      <Select
+                        id='demo-simple-select-label'
+                        labelId='demo-simple-select-label'
+                        value={status}
+                        label='Priority'
+                        onChange={(e) => setStatus(e.target.value)}
+                      >
+                        <MenuItem value='Getting Started'>Getting Started</MenuItem>
+                        <MenuItem value='Working on it'>Working on it</MenuItem>
+                        <MenuItem value='Stuck'>Stuck</MenuItem>
+                        <MenuItem value='Done'>Done</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </div>
                 <button type='submit' onClick={(e) => updateSubtask(e, subtaskId)}>
                   Update Subtask
@@ -246,6 +424,17 @@ const TaskDetails = ({ task, subtasks }) => {
                   <td>{subtask.role}</td>
                   <td>{subtask.status}</td>
                   <td>
+                    <AddToDriveIcon
+                      style={{
+                        color: '#fff',
+                        marginRight: '5px',
+                        padding: 3,
+                        cursor: 'pointer',
+                        backgroundColor: '#1976d2',
+                        borderRadius: 3,
+                      }}
+                      onClick={() => handleOpenPicker()}
+                    />
                     <EditIcon
                       onClick={(handleOpen, () => editSubtask(subtask.id))}
                       style={{
