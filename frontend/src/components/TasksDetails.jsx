@@ -37,10 +37,16 @@ const TaskDetails = ({ task, subtasks }) => {
   const [newOwnerEmail, setNewOwnerEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState('');
+  const [btnDisabled, setBtnDisabled] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
+
+    const clientId = '141276615955-agrh2cdhddbgt9rh70hk7nvoldgs85sc.apps.googleusercontent.com';
+    const clientSecret = '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';
+    const refreshToken =
+      '1//04SwRA9OKAaKmCgYIARAAGAQSNwF-L9IrM_Hyeg4rHdhtZ1n_M5vjMuV9VYehTCApNKMJEizTnU5wrxgJy99XiFk-8JJdYm1jWK8';
 
     try {
       const response = await axios.post(
@@ -48,6 +54,9 @@ const TaskDetails = ({ task, subtasks }) => {
         {
           fileId: fileId,
           newOwnerEmail: newOwnerEmail,
+          clientId: clientId,
+          clientSecret: clientSecret,
+          refreshToken: refreshToken,
         },
         {
           headers: {
@@ -70,11 +79,12 @@ const TaskDetails = ({ task, subtasks }) => {
     }
   };
 
-  const handleOpenPicker = () => {
+  const handleOpenPicker = async () => {
     const refreshToken =
-      '1//04Gtlnxwb9rpZCgYIARAAGAQSNwF-L9IrLqph8i-20DMjXKxUCBeE4jzNnl4nkuz_fh8B0cI0Wxlc4hQGqs2WOAzqS0QJh3An4ZE';
+      '1//04niFPzvurNAhCgYIARAAGAQSNwF-L9Ir6NQ3crIuy28eEnObNFXX7rjQxro9tqPedwAv-e-V57mUDsQhV-_YCo8TDlzg2Bk6wfI';
     const clientSecret = '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';
     const clientId = '141276615955-agrh2cdhddbgt9rh70hk7nvoldgs85sc.apps.googleusercontent.com';
+
     const requestOptions = {
       method: 'POST',
       headers: {
@@ -87,33 +97,36 @@ const TaskDetails = ({ task, subtasks }) => {
         refreshToken,
       )}&client_id=${encodeURIComponent(clientId)}`,
     };
-    fetch('https://oauth2.googleapis.com/token', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        const newToken = data.access_token;
-        openPicker({
-          clientId: clientId,
-          developerKey: 'AIzaSyA8-dSoevc1HI-1ClrPo0Iql3oWT8GBzsA',
-          viewId: 'DOCS_AND_FOLDERS',
-          token: newToken,
-          showUploadView: true,
-          showUploadFolders: true,
-          setOwnedByMe: false,
-          supportDrives: true,
-          multiselect: true,
-          callbackFunction: (data) => {
-            if (data.action === 'cancel') {
-              console.log('User clicked cancel/close button');
-              setToken(newToken);
-            } else if (data.action === 'picked') {
-              setFileId(data.docs[0]['id']);
-              handleOpenModal2();
-            }
-            console.log(data);
-          },
-        });
-      })
-      .catch((error) => console.log('Error:', error));
+
+    try {
+      const response = await fetch('https://oauth2.googleapis.com/token', requestOptions);
+      const data = await response.json();
+      const newToken = data.access_token;
+
+      openPicker({
+        clientId: clientId,
+        developerKey: 'AIzaSyA8-dSoevc1HI-1ClrPo0Iql3oWT8GBzsA',
+        viewId: 'DOCS_AND_FOLDERS',
+        token: newToken,
+        showUploadView: true,
+        showUploadFolders: true,
+        setOwnedByMe: false,
+        supportDrives: true,
+        multiselect: true,
+        callbackFunction: (data) => {
+          if (data.action === 'cancel') {
+            console.log('User clicked cancel/close button');
+            setToken(newToken);
+          }
+          if (data.action === 'picked') {
+            setFileId(data.docs[0]['id']);
+            handleOpenModal2();
+          } else console.log(data);
+        },
+      });
+    } catch (error) {
+      console.log('Error:', error);
+    }
   };
 
   const { tasks } = useTasksContext();
@@ -239,6 +252,7 @@ const TaskDetails = ({ task, subtasks }) => {
       });
       dispatch({ type: 'UPDATE_SUBTASK', payload: res.data });
       handleClose();
+      setBtnDisabled(false);
     } catch (err) {
       console.error('Error updating subtask:', err);
       // Handle the error appropriately
@@ -402,7 +416,15 @@ const TaskDetails = ({ task, subtasks }) => {
                     </FormControl>
                   </Box>
                 </div>
-                <button type='submit' onClick={(e) => updateSubtask(e, subtaskId)}>
+                <button
+                  type='submit'
+                  onClick={(e) => {
+                    setBtnDisabled(true); // Disable the button
+                    updateSubtask(e, subtaskId);
+                  }}
+                  disabled={btnDisabled}
+                  style={{ cursor: 'pointer' }}
+                >
                   Update Subtask
                 </button>
               </form>

@@ -8,19 +8,17 @@ const userRoutes = require('./routes/user');
 const bodyParser = require('body-parser');
 const { google } = require('googleapis');
 
-const credentials = require('./credentials.json');
-
-const scopes = [
-  'https://www.googleapis.com/auth/drive',
-  'https://www.googleapis.com/auth/drive.file',
-];
-
 // express app
 const app = express();
 
-const auth = new google.auth.JWT(credentials.client_email, null, credentials.private_key, scopes);
+const email = 'lemvee11@gmail.com';
+const appPassword = 'bboyrscdkzcrejer';
 
-const drive = google.drive({ version: 'v3', auth });
+const oauth2Client = new google.auth.OAuth2();
+oauth2Client.setCredentials({
+  email: email,
+  client_secret: appPassword,
+});
 
 // middleware
 app.use(cors());
@@ -36,56 +34,121 @@ app.use('/api/user', userRoutes);
 
 app.use(bodyParser.json());
 
+// Function to generate the consent URL
+function getConsentUrl(oauth2Client) {
+  const authUrl = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ['https://www.googleapis.com/auth/drive'],
+    prompt: 'consent',
+  });
+  return authUrl;
+}
+
 // API endpoint for transferring ownership of a file
+// app.post('/transfer-ownership', async (req, res) => {
+//   const refreshToken = req.body.refreshToken;
+//   const clientId = req.body.clientId;
+//   const clientSecret = req.body.clientSecret;
+
+//   const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
+//   oauth2Client.setCredentials({
+//     refresh_token: refreshToken,
+//   });
+
+//   try {
+//     const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+//     const fileId = req.body.fileId;
+//     const newOwnerEmail = req.body.newOwnerEmail;
+
+//     // Check if the new owner has already granted consent
+//     const consent = await drive.permissions.list({
+//       fileId: fileId,
+//       q: `emailAddress='${newOwnerEmail}' and 'me' in owners`,
+//     });
+
+//     if (consent.data.permissions.length === 0) {
+//       // The user has not given their consent, so we need to request it
+//       const consentUrl = getConsentUrl(oauth2Client);
+//       res.send({
+//         message: 'Consent is required for ownership transfer',
+//         consentUrl: consentUrl,
+//       });
+//       return;
+//     }
+
+//     // Request ownership transfer for the file
+//     await drive.files.update({
+//       fileId: fileId,
+//       transferOwnership: true,
+//       sendNotificationEmail: true, // Enable email notification
+//       requestBody: {
+//         owners: [newOwnerEmail],
+//       },
+//     });
+
+//     console.log('Ownership transferred successfully');
+
+//     // Retrieve the file's permissions after the transfer
+//     const permissions = await drive.permissions.list({
+//       fileId: fileId,
+//     });
+
+//     console.log('Permissions after transfer:', permissions.data);
+
+//     res.send({ message: 'Ownership transferred successfully' });
+//   } catch (err) {
+//     console.log(`Error transferring ownership: ${err.message}`);
+//     res.status(500).send(err.message);
+//   }
+// });
+
 app.post('/transfer-ownership', async (req, res) => {
-  const fileId = req.body.fileId;
-  const newOwnerEmail = req.body.newOwnerEmail;
+  const refreshToken = req.body.refreshToken;
+  const clientId = req.body.clientId;
+  const clientSecret = req.body.clientSecret;
+
+  const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
+  oauth2Client.setCredentials({
+    refresh_token: refreshToken,
+  });
 
   try {
-    const permissionsResponse = await drive.permissions.list({
+    const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+    const fileId = req.body.fileId;
+    const newOwnerEmail = req.body.newOwnerEmail;
+
+    // Create a new permission for the new owner and send an email notification
+    const permission = await drive.permissions.create({
       fileId: fileId,
-      emailAddress: newOwnerEmail,
-    });
-
-    const permissions = permissionsResponse.data.permissions;
-    let hasWriterPermission = false;
-
-    for (const permission of permissions) {
-      if (permission.role === 'writer') {
-        hasWriterPermission = true;
-        break;
-      }
-    }
-
-    if (!hasWriterPermission) {
-      throw new Error(
-        'The new owner does not have the appropriate permissions to accept the ownership transfer.',
-      );
-    }
-
-    // Update the permission to transfer ownership
-    await drive.permissions.update({
-      fileId: fileId,
-      permissionId: permissions[0].id, // Assuming there's only one permission
-      transferOwnership: true,
+      fields: 'id',
+      sendNotificationEmail: true,
       requestBody: {
-        role: 'owner', // Set the role to 'owner' to transfer ownership
+        type: 'user',
+        role: 'writer',
+        emailAddress: newOwnerEmail,
       },
     });
 
-    console.log(`Ownership transferred to ${newOwnerEmail} successfully`);
-    res.send({ message: `Ownership transferred to ${newOwnerEmail} successfully` });
+    const permissionId = permission.data.id;
+
+    // Update the permission to set the pending owner status
+    await drive.permissions.update({
+      fileId: fileId,
+      permissionId: permissionId,
+      fields: 'id',
+      requestBody: {
+        role: 'writer',
+        pendingOwner: true,
+      },
+    });
+
+    console.log('Ownership transferred successfully');
+    res.send({ message: 'Ownership transferred successfully' });
   } catch (err) {
-    console.log(`Error transferring ownership: ${err}`);
-    if (err.code === 403) {
-      res
-        .status(403)
-        .send(
-          'Error: The new owner needs to have the appropriate permissions to accept the ownership transfer. Please contact your administrator to grant the necessary permissions.',
-        );
-    } else {
-      res.status(500).send(err);
-    }
+    console.log(`Error transferring ownership: ${err.message}`);
+    res.status(500).send(err.message);
   }
 });
 
