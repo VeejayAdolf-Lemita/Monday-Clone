@@ -42,8 +42,8 @@ const subtaskSchema = new Schema({
     type: String,
     required: true,
   },
-  memberEmail: String,
-  member: String,
+  memberEmail: Array,
+  member: Array,
   description: {
     type: String,
     required: true,
@@ -72,6 +72,10 @@ const taskSchema = new Schema(
     completed: { type: Boolean, default: false },
     subtasks: [subtaskSchema],
     member: Array,
+    createdBy: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );

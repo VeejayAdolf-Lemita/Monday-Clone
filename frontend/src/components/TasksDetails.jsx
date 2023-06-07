@@ -21,7 +21,7 @@ const TaskDetails = ({ task, subtasks }) => {
   const { user } = useAuthContext();
   const [name, setName] = useState('');
   const [users, setUsers] = useState([]);
-  const [member, setMember] = useState('');
+  const [member, setMember] = useState([]);
   const [description, setDescription] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('Todo');
@@ -217,6 +217,7 @@ const TaskDetails = ({ task, subtasks }) => {
   const editSubtask = (subtaskId) => {
     const subtaskToEdit = subtasks.find((subtask) => subtask.id === subtaskId);
     if (subtaskToEdit) {
+      console.log(subtaskToEdit);
       setName(subtaskToEdit.name);
       setMember(subtaskToEdit.member);
       setDescription(subtaskToEdit.description);
@@ -328,12 +329,24 @@ const TaskDetails = ({ task, subtasks }) => {
                         value={member}
                         label='Priority'
                         onChange={(e) => setMember(e.target.value)}
+                        multiple
                       >
-                        {users.map((user) => (
-                          <MenuItem key={user.id} value={user.id} required>
-                            {user.email}
+                        {member.map((mem) => (
+                          <MenuItem key={mem.id} value={mem}>
+                            {mem.email}
                           </MenuItem>
                         ))}
+                        {users
+                          .filter((user) => {
+                            return !member.some((mem) => {
+                              return user.id === mem.id;
+                            });
+                          })
+                          .map((opt) => (
+                            <MenuItem key={opt.id} value={opt}>
+                              {opt.email}
+                            </MenuItem>
+                          ))}
                       </Select>
                     </FormControl>
                   </Box>

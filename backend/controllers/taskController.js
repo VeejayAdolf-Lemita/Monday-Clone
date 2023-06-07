@@ -2,12 +2,46 @@ const { Task, Subtask, Message } = require('../models/tasksModel');
 const { uuid } = require('uuidv4');
 const nodemailer = require('nodemailer');
 
+const sendEmail = async (memberEmail, subtaskName, taskTitle) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'lemvee11@gmail.com',
+        pass: 'bboyrscdkzcrejer',
+      },
+    });
+
+    const message = {
+      from: 'lemvee11@gmail.com',
+      to: `${memberEmail}`,
+      subject: 'New Subtask Created',
+      text: `You were invited to join an Item
+         A new Task "${subtaskName}" has been created for project "${taskTitle}".`,
+    };
+
+    const mail = await transporter.sendMail(message);
+    console.info(`email has been sent ${JSON.stringify(mail)}`);
+    return { mail, message: 'Email has been sent' };
+  } catch (err) {
+    return { err, message: 'There was a problem sending an email' };
+  }
+};
+
+const filterNonExistentMembers = async (task) => {
+  let newTaskMembers = task.subtasks
+    .flatMap((subtask) => subtask.member.map((subMember) => subMember.id))
+    .filter((subMemberId, index, taskMembers) => taskMembers.indexOf(subMemberId) === index);
+
+  newTaskMembers = [...newTaskMembers, task.createdBy];
+
+  return newTaskMembers;
+};
+
 // GET all tasks
 const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find({ member: req.user.id });
-
-    console.log(tasks);
 
     // Only include subtasks that belong to the user
     tasks.forEach((task) => {
@@ -45,7 +79,13 @@ const getTask = async (req, res) => {
 const createTask = async (req, res) => {
   try {
     const { title, role } = req.body;
-    const task = new Task({ title, member: [req.user.id], role, id: uuid() });
+    const task = new Task({
+      title,
+      member: [req.user.id],
+      role,
+      id: uuid(),
+      createdBy: req.user.id,
+    });
     await task.save();
     res.json(task);
   } catch (err) {
@@ -120,7 +160,13 @@ const createSubtask = async (req, res) => {
     }
 
     const data = req.body;
-    const { name, memberEmail, description, role, status, member } = data;
+    const { name, description, role, status, member } = data;
+
+    let memberEmail = [];
+    member.forEach((mem) => {
+      memberEmail.push(mem.email);
+      task.member.indexOf(mem.id) === -1 ? task.member.push(mem.id) : null;
+    });
 
     if (!name || !description || !role || !status) {
       return res.status(400).json({
@@ -139,32 +185,10 @@ const createSubtask = async (req, res) => {
     });
 
     task.subtasks.push(subtask);
-    task.member.indexOf(member) === -1 ? task.member.push(member) : null;
-
     await subtask.save();
     await task.save();
 
-    try {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'lemvee11@gmail.com',
-          pass: 'bboyrscdkzcrejer',
-        },
-      });
-
-      const message = {
-        from: 'lemvee11@gmail.com',
-        to: `${memberEmail}`,
-        subject: 'New Subtask Created',
-        text: `A new subtask "${name}" has been created for task "${task.title}".`,
-      };
-
-      const mail = await transporter.sendMail(message);
-      console.log(mail, 'Email has been sent');
-    } catch (err) {
-      console.log(err, 'There was a problem sending an email');
-    }
+    await sendEmail(memberEmail, subtask.name, task.title);
 
     res.send(subtask);
   } catch (err) {
@@ -188,6 +212,7 @@ const deleteSubtask = async (req, res) => {
     }
 
     task.subtasks.splice(subtaskIndex, 1);
+    task.member = await filterNonExistentMembers(task);
 
     await task.save();
 
@@ -199,6 +224,8 @@ const deleteSubtask = async (req, res) => {
 };
 
 const updateSubtask = async (req, res) => {
+  const { name, member, description, role, status } = req.body;
+
   try {
     const task = await Task.findById(req.params.taskId);
 
@@ -212,13 +239,30 @@ const updateSubtask = async (req, res) => {
       return res.status(404).json({ msg: 'Subtask not found' });
     }
 
-    subtask.name = req.body.name || subtask.name;
-    subtask.member = req.body.member || subtask.member; // Add member field to the subtask object
-    subtask.description = req.body.description || subtask.description;
-    subtask.role = req.body.role || subtask.role;
-    subtask.status = req.body.status || subtask.status;
+    const { memberEmail } = subtask;
+
+    let newMembers = [];
+    let newMemberEmail = memberEmail.filter((memEmail) =>
+      member.some((mem) => mem.email === memEmail),
+    );
+
+    member.forEach((mem) => {
+      memberEmail.indexOf(mem.email) === -1 ? newMembers.push(mem.email) : null;
+      task.member.indexOf(mem.id) === -1 ? task.member.push(mem.id) : null;
+    });
+
+    subtask.name = name || subtask.name;
+    subtask.member = member || subtask.member; // Add member field to the subtask object
+    subtask.description = description || subtask.description;
+    subtask.role = role || subtask.role;
+    subtask.status = status || subtask.status;
+    subtask.memberEmail = [...newMemberEmail, ...newMembers];
+
+    task.member = await filterNonExistentMembers(task);
 
     await task.save();
+
+    if (newMembers.length > 0) await sendEmail(memberEmail, subtask.name, task.title);
 
     res.json(subtask);
   } catch (err) {

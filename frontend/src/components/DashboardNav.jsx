@@ -12,6 +12,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useAppStore } from '../appStore';
 import { useLogout } from '../hooks/useLogout';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -20,6 +21,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export default function DashboardNav() {
+  const { user } = useAuthContext();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const updateOpen = useAppStore((state) => state.updateOpen);
@@ -122,6 +124,7 @@ export default function DashboardNav() {
             Monday Clone
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
+          {user.email}
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton
               size='large'

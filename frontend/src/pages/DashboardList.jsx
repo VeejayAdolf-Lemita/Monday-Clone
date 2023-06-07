@@ -1,14 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SideNav from '../components/Sidenav';
 import DashboardNav from '../components/DashboardNav';
-import Box from '@mui/material/Box';
+import { Box, Button } from '@mui/material';
 import { useEffect } from 'react';
 import { useTasksContext } from '../hooks/useTasksContext';
 import TasksDetails from '../components/TasksDetails';
+import Creation from '../assets/Creation.png';
 import { useAuthContext } from '../hooks/useAuthContext';
 
 const DashboardList = () => {
+  const navigate = useNavigate();
   const { tasks, dispatch } = useTasksContext();
   const { user } = useAuthContext();
 
@@ -38,12 +41,31 @@ const DashboardList = () => {
       <Box sx={{ display: 'flex' }}>
         <SideNav />
         <div className='home'>
-          <div className='tasks'>
-            {tasks &&
-              tasks.map((task) => (
+          {tasks && tasks.length > 0 ? (
+            <div className='tasks'>
+              {tasks.map((task) => (
                 <TasksDetails key={task?._id} task={task} subtasks={task?.subtasks} />
               ))}
-          </div>
+            </div>
+          ) : (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div>
+                  <h1>Create your first Project Task</h1>
+                  <Button
+                    variant='contained'
+                    color='success'
+                    onClick={() => {
+                      navigate('/dashboard/add');
+                    }}
+                  >
+                    Let's Go
+                  </Button>
+                </div>
+                <img src={Creation} alt='First Task' width={800} />
+              </div>
+            </div>
+          )}
         </div>
       </Box>
     </>

@@ -9,8 +9,7 @@ import { Select, MenuItem, InputLabel, Box, FormControl } from '@mui/material';
 
 const SubtaskForm = ({ addSubtask }) => {
   const [name, setName] = useState('');
-  const [member, setMember] = useState('');
-  const [selectedMember, setSelectedMember] = useState(null);
+  const [member, setMember] = useState([]);
   const [description, setDescription] = useState('');
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('Getting Started');
@@ -22,12 +21,10 @@ const SubtaskForm = ({ addSubtask }) => {
         const response = await axios.get('/api/user/');
         const data = response.data; // Use response.data instead of response.json()
         setUsers(data);
-        console.log(data);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
-
     fetchUsers();
   }, []);
 
@@ -35,16 +32,16 @@ const SubtaskForm = ({ addSubtask }) => {
     e.preventDefault();
     const newSubtask = {
       name,
-      memberEmail: selectedMember ? selectedMember.email : '',
       member,
       description,
       role,
       status,
     };
+
     try {
       await addSubtask(newSubtask);
       setName('');
-      setMember('');
+      setMember([]);
       setDescription('');
       setRole('');
       setStatus('Getting Started');
@@ -83,17 +80,13 @@ const SubtaskForm = ({ addSubtask }) => {
                 <Select
                   id='demo-simple-select-label'
                   labelId='demo-simple-select-label'
+                  multiple
                   value={member}
                   label='Priority'
-                  onChange={(e) => {
-                    const selectedMemberId = e.target.value;
-                    const selectedMember = users.find((user) => user.id === selectedMemberId);
-                    setSelectedMember(selectedMember);
-                    setMember(selectedMemberId);
-                  }}
+                  onChange={(e) => setMember(e.target.value)}
                 >
                   {users.map((user) => (
-                    <MenuItem key={user.id} value={user.id} required>
+                    <MenuItem key={user.id} value={user} required>
                       {user.email}
                     </MenuItem>
                   ))}
