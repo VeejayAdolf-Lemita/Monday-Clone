@@ -19,7 +19,7 @@ const SubtaskForm = ({ addSubtask }) => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get('/api/user/');
-        const data = response.data; // Use response.data instead of response.json()
+        const data = Array.isArray(response.data) ? response.data : [response.data];
         setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);
