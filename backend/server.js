@@ -44,65 +44,6 @@ function getConsentUrl(oauth2Client) {
   return authUrl;
 }
 
-// API endpoint for transferring ownership of a file
-// app.post('/transfer-ownership', async (req, res) => {
-//   const refreshToken = req.body.refreshToken;
-//   const clientId = req.body.clientId;
-//   const clientSecret = req.body.clientSecret;
-
-//   const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
-//   oauth2Client.setCredentials({
-//     refresh_token: refreshToken,
-//   });
-
-//   try {
-//     const drive = google.drive({ version: 'v3', auth: oauth2Client });
-
-//     const fileId = req.body.fileId;
-//     const newOwnerEmail = req.body.newOwnerEmail;
-
-//     // Check if the new owner has already granted consent
-//     const consent = await drive.permissions.list({
-//       fileId: fileId,
-//       q: `emailAddress='${newOwnerEmail}' and 'me' in owners`,
-//     });
-
-//     if (consent.data.permissions.length === 0) {
-//       // The user has not given their consent, so we need to request it
-//       const consentUrl = getConsentUrl(oauth2Client);
-//       res.send({
-//         message: 'Consent is required for ownership transfer',
-//         consentUrl: consentUrl,
-//       });
-//       return;
-//     }
-
-//     // Request ownership transfer for the file
-//     await drive.files.update({
-//       fileId: fileId,
-//       transferOwnership: true,
-//       sendNotificationEmail: true, // Enable email notification
-//       requestBody: {
-//         owners: [newOwnerEmail],
-//       },
-//     });
-
-//     console.log('Ownership transferred successfully');
-
-//     // Retrieve the file's permissions after the transfer
-//     const permissions = await drive.permissions.list({
-//       fileId: fileId,
-//     });
-
-//     console.log('Permissions after transfer:', permissions.data);
-
-//     res.send({ message: 'Ownership transferred successfully' });
-//   } catch (err) {
-//     console.log(`Error transferring ownership: ${err.message}`);
-//     res.status(500).send(err.message);
-//   }
-// });
-
 app.post('/transfer-ownership', async (req, res) => {
   const refreshToken = req.body.refreshToken;
   const clientId = req.body.clientId;
