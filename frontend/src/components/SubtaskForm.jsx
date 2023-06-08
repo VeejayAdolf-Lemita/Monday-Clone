@@ -85,7 +85,7 @@ const SubtaskForm = ({ addSubtask }) => {
                   id='demo-simple-select-label'
                   labelId='demo-simple-select-label'
                   multiple
-                  value={member}
+                  value={member} // Update this line
                   label='Priority'
                   onChange={(e) => setMember(e.target.value)}
                 >
@@ -120,7 +120,7 @@ const SubtaskForm = ({ addSubtask }) => {
                   <Select
                     id='demo-simple-select-label'
                     labelId='demo-simple-select-label'
-                    value={role}
+                    value={role} // Update this line
                     label='Priority'
                     onChange={(e) => setRole(e.target.value)}
                   >
@@ -140,7 +140,7 @@ const SubtaskForm = ({ addSubtask }) => {
                   <Select
                     id='demo-simple-select-label'
                     labelId='demo-simple-select-label'
-                    value={status}
+                    value={status} // Update this line
                     label='Priority'
                     onChange={(e) => setStatus(e.target.value)}
                   >
