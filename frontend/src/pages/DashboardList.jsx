@@ -23,7 +23,8 @@ const DashboardList = () => {
             Authorization: `Bearer ${user.token}`,
           },
         });
-        dispatch({ type: 'SET_TASKS', payload: response.data });
+        const tasksArray = Array.isArray(response.data) ? response.data : [response.data];
+        dispatch({ type: 'SET_TASKS', payload: tasksArray });
       } catch (error) {
         console.error(error);
       }
