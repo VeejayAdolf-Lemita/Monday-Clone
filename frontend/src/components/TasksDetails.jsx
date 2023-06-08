@@ -163,14 +163,14 @@ const TaskDetails = ({ task, subtasks }) => {
   useEffect(() => {
     const getSubtasks = async () => {
       try {
-        const res = await axios.get(`/api/tasks/${task.id}/subtasks`, {
+        const response = await axios.get(`/api/tasks/${task.id}/subtasks`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         });
-
-        console.log(res, 'response');
-        dispatch({ type: 'GET_SUBTASK', payload: { data: res.data, taskId: task.id } });
+        const data = Array.isArray(response.data) ? response.data : [response.data];
+        console.log(data, 'response');
+        dispatch({ type: 'GET_SUBTASK', payload: { data, taskId: task.id } });
       } catch (err) {
         console.error(err.response.data);
       }
