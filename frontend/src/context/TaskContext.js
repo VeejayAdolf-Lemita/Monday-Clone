@@ -74,29 +74,31 @@ export const tasksReducer = (state, action) => {
         tasks: state.tasks.map((task) => {
           if (task.id === action.payload.taskId) {
             // Use action.payload.taskId instead of taskId
+            const updatedSubtasks = task.subtasks.map((subtask) => {
+              if (subtask.id === action.payload.subtaskId) {
+                // Use action.payload.subtaskId instead of subtaskId
+                return {
+                  ...subtask,
+                  messages: subtask.messages.map((message) => {
+                    if (message._id === action.payload.messageId) {
+                      // Use action.payload.messageId to find the correct message
+                      return {
+                        ...message,
+                        replies: action.payload.data.replies, // Update the replies for the message
+                      };
+                    } else {
+                      return message;
+                    }
+                  }),
+                };
+              } else {
+                return subtask;
+              }
+            });
+
             return {
               ...task,
-              subtasks: task.subtasks.map((subtask) => {
-                if (subtask.id === action.payload.subtaskId) {
-                  // Use action.payload.subtaskId instead of subtaskId
-                  return {
-                    ...subtask,
-                    messages: subtask.messages.map((message) => {
-                      if (message._id === action.payload.messageId) {
-                        // Use action.payload.messageId to find the correct message
-                        return {
-                          ...message,
-                          replies: action.payload.data.replies, // Update the replies for the message
-                        };
-                      } else {
-                        return message;
-                      }
-                    }),
-                  };
-                } else {
-                  return subtask;
-                }
-              }),
+              subtasks: updatedSubtasks,
             };
           } else {
             return task;
