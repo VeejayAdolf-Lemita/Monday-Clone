@@ -148,7 +148,7 @@ const TaskDetails = ({ task, subtasks }) => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get('/api/user/');
-        const data = response.data;
+        const data = Array.isArray(response.data) ? response.data : [response.data];
         setUsers(data);
         console.log(data);
       } catch (error) {
