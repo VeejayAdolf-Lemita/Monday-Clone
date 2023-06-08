@@ -41,7 +41,7 @@ const TaskForm = () => {
   return (
     <div
       style={{
-        width: '70%',
+        width: '100%',
         height: '70vh',
         display: 'flex',
         justifyContent: 'center',

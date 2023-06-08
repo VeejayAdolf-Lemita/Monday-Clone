@@ -320,14 +320,16 @@ const TaskDetails = ({ task, subtasks }) => {
             aria-describedby='modal-modal-description'
           >
             <Box sx={style}>
-              <h1 style={{ textAlign: 'center' }}>Edit Project</h1>
+              <h1 style={{ textAlign: 'center' }}>Edit Task</h1>
               <form onSubmit={updateSubtask}>
                 <div>
-                  <input
-                    type='text'
-                    placeholder='Name'
+                  <TextField
+                    id='outlined-basic'
+                    label='Name'
+                    variant='outlined'
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    fullWidth
                     required
                   />
                 </div>
@@ -366,12 +368,13 @@ const TaskDetails = ({ task, subtasks }) => {
                   </Box>
                 </div>
                 <div>
-                  <input
-                    type='text'
-                    placeholder='Description'
+                  <TextField
+                    id='outlined-basic'
+                    label='Description'
+                    variant='outlined'
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    maxLength={25}
+                    fullWidth
                     required
                   />
                 </div>
@@ -425,7 +428,7 @@ const TaskDetails = ({ task, subtasks }) => {
                   disabled={btnDisabled}
                   style={{ cursor: 'pointer' }}
                 >
-                  Update Subtask
+                  Update
                 </button>
               </form>
             </Box>
@@ -509,7 +512,7 @@ const TaskDetails = ({ task, subtasks }) => {
             </tr>
           </thead>
           <tbody>
-            <p>No subtasks found.</p>
+            <p>No Tasks Found. Click "ADD TASK" to begin</p>
           </tbody>
         </Table>
       )}

@@ -5,7 +5,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Select, MenuItem, InputLabel, Box, FormControl } from '@mui/material';
+import { Select, MenuItem, InputLabel, Box, FormControl, TextField } from '@mui/material';
 
 const SubtaskForm = ({ addSubtask }) => {
   const [name, setName] = useState('');
@@ -57,19 +57,23 @@ const SubtaskForm = ({ addSubtask }) => {
         aria-controls='panel1a-content'
         id='panel1a-header'
       >
-        <Typography>ADD PROJECT</Typography>
+        <Typography>ADD TASK</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Typography>
           <form onSubmit={handleSubmit}>
             <div>
-              <input
-                type='text'
-                placeholder='Name'
+              <TextField
+                id='outlined-basic'
+                label='Name'
+                variant='outlined'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                maxLength={25}
+                fullWidth
                 required
+                InputLabelProps={{
+                  style: { background: 'white' },
+                }}
               />
             </div>
             <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
@@ -94,12 +98,17 @@ const SubtaskForm = ({ addSubtask }) => {
               </FormControl>
             </Box>
             <div>
-              <input
-                type='text'
-                placeholder='Description'
+              <TextField
+                id='outlined-basic'
+                label='Description'
+                variant='outlined'
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                fullWidth
                 required
+                InputLabelProps={{
+                  style: { background: 'white' },
+                }}
               />
             </div>
             <div>
