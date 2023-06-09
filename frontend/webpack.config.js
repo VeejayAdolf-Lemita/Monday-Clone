@@ -11,7 +11,7 @@ module.exports = {
     historyApiFallback: true,
     contentBase: './build',
     port: 3000,
-    allowedHosts: ['*'],
+    allowedHosts: ['localhost'], // Update this line with your desired allowed hosts
   },
   module: {
     rules: [
