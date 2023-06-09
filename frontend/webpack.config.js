@@ -11,7 +11,8 @@ module.exports = {
     historyApiFallback: true,
     contentBase: './build',
     port: 3000,
-    allowedHosts: ['*'],
+    isolatedModules: false,
+    allowedHosts: ['localhost', '209.38.250.1'],
   },
   module: {
     rules: [
