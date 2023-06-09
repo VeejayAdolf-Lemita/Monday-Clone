@@ -12,7 +12,7 @@ module.exports = {
     contentBase: './build',
     port: 3000,
     isolatedModules: false,
-    allowedHosts: ['localhost', '209.38.250.1'],
+    allowedHosts: ['*'],
   },
   module: {
     rules: [
