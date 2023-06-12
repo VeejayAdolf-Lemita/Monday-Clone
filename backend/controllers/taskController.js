@@ -12,12 +12,13 @@ const sendEmail = async (memberEmail, subtaskName, taskTitle) => {
       },
     });
 
+    const link = 'http://209.38.250.1:3000/dashboard';
+
     const message = {
       from: 'lemvee11@gmail.com',
       to: `${memberEmail}`,
       subject: 'New Subtask Created',
-      text: `You were invited to join an Item
-         A new Task "${subtaskName}" has been created for project "${taskTitle}".`,
+      text: `You were invited to join an Item\nA new Task "${subtaskName}" has been created for project "${taskTitle}".\nClick the following link to access the task: ${link}`,
     };
 
     const mail = await transporter.sendMail(message);
