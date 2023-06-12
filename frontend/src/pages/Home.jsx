@@ -67,7 +67,8 @@ const Home = () => {
               <Stack sx={{ pt: 4 }} direction='row' spacing={2} justifyContent='center'>
                 <Link to='/login' style={{ textDecoration: 'none' }}>
                   <RoundedButton variant='contained' color='primary'>
-                    Get Started <ArrowForwardIcon color='#fff' />
+                    Get Started{' '}
+                    <ArrowForwardIcon color='#fff' style={{ fontSize: '1rem', marginLeft: 'px' }} />
                   </RoundedButton>
                 </Link>
               </Stack>
