@@ -30,7 +30,7 @@ const Home = () => {
           <Box
             sx={{
               bgcolor: 'background.paper',
-              pt: 8,
+              pt: '11.5vh',
             }}
           >
             <Container
