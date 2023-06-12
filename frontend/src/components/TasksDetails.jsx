@@ -147,7 +147,7 @@ const TaskDetails = ({ task, subtasks }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/user/');
+        const response = await axios.get('http://209.38.250.1:4000/api/user/');
         const data = Array.isArray(response.data) ? response.data : [response.data];
         setUsers(data);
         console.log(data);
@@ -163,7 +163,7 @@ const TaskDetails = ({ task, subtasks }) => {
   useEffect(() => {
     const getSubtasks = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/tasks/${task.id}/subtasks`, {
+        const response = await axios.get(`http://209.38.250.1:4000/api/tasks/${task.id}/subtasks`, {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -182,7 +182,7 @@ const TaskDetails = ({ task, subtasks }) => {
     try {
       // Send POST request to create new subtask
       const res = await axios.post(
-        `http://localhost:4000/api/tasks/${task.id}/subtasks`,
+        `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks`,
         newSubtask,
         {
           headers: {
@@ -199,7 +199,7 @@ const TaskDetails = ({ task, subtasks }) => {
 
   const deleteSubtask = async (subtaskId) => {
     try {
-      await axios.delete(`http://localhost:4000/api/tasks/${task.id}/subtasks/${subtaskId}`, {
+      await axios.delete(`http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtaskId}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
@@ -216,7 +216,7 @@ const TaskDetails = ({ task, subtasks }) => {
       return;
     }
 
-    const response = await fetch('http://localhost:4000/api/tasks/' + task.id, {
+    const response = await fetch('http://209.38.250.1:4000/api/tasks/' + task.id, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -250,7 +250,7 @@ const TaskDetails = ({ task, subtasks }) => {
     const updatedSubtask = { name, member, description, role, status };
     try {
       const res = await axios.put(
-        `http://localhost:4000/api/tasks/${task._id}/subtasks/${subtaskId}`,
+        `http://209.38.250.1:4000/api/tasks/${task._id}/subtasks/${subtaskId}`,
         updatedSubtask,
         {
           headers: {
