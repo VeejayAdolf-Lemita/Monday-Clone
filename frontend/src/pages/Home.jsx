@@ -31,6 +31,7 @@ const Home = () => {
             sx={{
               bgcolor: 'background.paper',
               pt: 8,
+              height: '80vh',
             }}
           >
             <Container
