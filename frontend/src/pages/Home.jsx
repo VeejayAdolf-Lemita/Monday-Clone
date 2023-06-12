@@ -76,6 +76,13 @@ const Home = () => {
                 </Link>
               </Stack>
             </Container>
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>
+              <path
+                fill='#000b76'
+                fill-opacity='1'
+                d='M0,32L360,160L720,224L1080,32L1440,128L1440,320L1080,320L720,320L360,320L0,320Z'
+              ></path>
+            </svg>
           </Box>
         </main>
       </ThemeProvider>
