@@ -31,7 +31,6 @@ const Home = () => {
             sx={{
               bgcolor: 'background.paper',
               pt: 8,
-              height: '80vh',
             }}
           >
             <Container
@@ -76,7 +75,11 @@ const Home = () => {
                 </Link>
               </Stack>
             </Container>
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'>
+            <svg
+              xmlns='http://www.w3.org/2000/svg'
+              viewBox='0 0 1440 320'
+              style={{ height: '100%', width: '100%' }}
+            >
               <path
                 fill='#000b76'
                 fill-opacity='1'
