@@ -18,7 +18,7 @@ const TaskForm = () => {
     const task = { title };
 
     try {
-      const response = await axios.post('/api/tasks', task, {
+      const response = await axios.post('http://localhost:4000/api/tasks', task, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,

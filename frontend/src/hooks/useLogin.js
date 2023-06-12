@@ -12,7 +12,10 @@ export const useLogin = () => {
     setError(null);
 
     try {
-      const response = await axios.post('/api/user/login', { email, password });
+      const response = await axios.post('http://localhost:4000/api/user/login', {
+        email,
+        password,
+      });
       const json = response.data;
 
       // save the user to local storage

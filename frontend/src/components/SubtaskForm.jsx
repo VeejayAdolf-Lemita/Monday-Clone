@@ -18,7 +18,7 @@ const SubtaskForm = ({ addSubtask }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('/api/user/');
+        const response = await axios.get('http://localhost:4000/api/user/');
         const data = Array.isArray(response.data) ? response.data : [response.data];
         setUsers(data);
       } catch (error) {
