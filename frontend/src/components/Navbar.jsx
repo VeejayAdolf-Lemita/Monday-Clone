@@ -15,7 +15,10 @@ const RoundedButton = styled(Button)({
 
 const Navbar = () => {
   return (
-    <AppBar position='relative' style={{ backgroundColor: '#FFF', cursor: 'pointer' }}>
+    <AppBar
+      position='relative'
+      style={{ backgroundColor: '#FFF', cursor: 'pointer', position: 'fixed' }}
+    >
       <Toolbar>
         <Typography variant='h6' color='inherit' noWrap style={{ flexGrow: 1 }}>
           <img src={Logo} alt='monday.com' width='180px' />
