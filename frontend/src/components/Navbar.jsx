@@ -26,7 +26,8 @@ const Navbar = () => {
             color='primary'
             style={{ marginLeft: 'auto', cursor: 'pointer' }}
           >
-            Get Started <ArrowForwardIcon color='#fff' />
+            Get Started{' '}
+            <ArrowForwardIcon color='#fff' style={{ fontSize: '1rem', marginLeft: '4px' }} />
           </RoundedButton>
         </Link>
       </Toolbar>

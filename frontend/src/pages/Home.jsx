@@ -68,7 +68,10 @@ const Home = () => {
                 <Link to='/login' style={{ textDecoration: 'none' }}>
                   <RoundedButton variant='contained' color='primary'>
                     Get Started{' '}
-                    <ArrowForwardIcon color='#fff' style={{ fontSize: '1rem', marginLeft: 'px' }} />
+                    <ArrowForwardIcon
+                      color='#fff'
+                      style={{ fontSize: '1rem', marginLeft: '4px' }}
+                    />
                   </RoundedButton>
                 </Link>
               </Stack>
