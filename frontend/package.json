@@ -1,7 +1,6 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "proxy": "http://209.38.250.1:4000",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.6",
