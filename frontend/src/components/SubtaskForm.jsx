@@ -14,6 +14,7 @@ const SubtaskForm = ({ addSubtask }) => {
   const [role, setRole] = useState('');
   const [status, setStatus] = useState('Getting Started');
   const [users, setUsers] = useState([]);
+  const [disable, setDisable] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -37,6 +38,7 @@ const SubtaskForm = ({ addSubtask }) => {
       role,
       status,
     };
+    setDisable(true);
 
     try {
       await addSubtask(newSubtask);
@@ -45,6 +47,7 @@ const SubtaskForm = ({ addSubtask }) => {
       setDescription('');
       setRole('');
       setStatus('Getting Started');
+      setDisable(false);
     } catch (err) {
       console.error(err);
     }
@@ -152,7 +155,9 @@ const SubtaskForm = ({ addSubtask }) => {
                 </FormControl>
               </Box>
             </div>
-            <button type='submit'>Add Subtask</button>
+            <button type='submit' disabled={disable}>
+              Add Subtask
+            </button>
           </form>
         </Typography>
       </AccordionDetails>
