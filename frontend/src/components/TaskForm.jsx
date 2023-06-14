@@ -20,7 +20,7 @@ const TaskForm = () => {
     setDisable(true);
 
     try {
-      const response = await axios.post('http://localhost:4000/api/tasks', task, {
+      const response = await axios.post('http://209.38.250.1:4000/api/tasks', task, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${user.token}`,
@@ -29,7 +29,6 @@ const TaskForm = () => {
       if (response.status === 200) {
         setTitle('');
         setError(null);
-        console.log('New task added', response.data);
         dispatch({ type: 'CREATE_TASK', payload: response.data });
         setDisable(false);
       } else {
