@@ -12,7 +12,7 @@ const sendEmail = async (memberEmail, subtaskName, taskTitle) => {
       },
     });
 
-    const link = 'http://209.38.250.1:3000/dashboard';
+    const link = 'https://209.38.250.1:3000/dashboard';
 
     const message = {
       from: 'lemvee11@gmail.com',
