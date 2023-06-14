@@ -40,9 +40,12 @@ export default function DashboardNav() {
   };
 
   const handleMenuClose = () => {
-    logout();
     setAnchorEl(null);
     handleMobileMenuClose();
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   const handleMobileMenuOpen = (event) => {
@@ -66,7 +69,7 @@ export default function DashboardNav() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem onClick={handleLogout}>Logout</MenuItem>
     </Menu>
   );
 

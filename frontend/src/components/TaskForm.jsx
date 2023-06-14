@@ -8,6 +8,7 @@ const TaskForm = () => {
   const { user } = useAuthContext();
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
+  const [disable, setDisable] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,6 +17,7 @@ const TaskForm = () => {
       return;
     }
     const task = { title };
+    setDisable(true);
 
     try {
       const response = await axios.post('http://209.38.250.1:4000/api/tasks', task, {
@@ -29,6 +31,7 @@ const TaskForm = () => {
         setError(null);
         console.log('New task added', response.data);
         dispatch({ type: 'CREATE_TASK', payload: response.data });
+        setDisable(false);
       } else {
         setError(response.data.error);
       }
@@ -67,7 +70,7 @@ const TaskForm = () => {
       >
         <h3>CREATE PROJECT BOARD</h3>
         <input type='text' onChange={(e) => setTitle(e.target.value)} value={title} />
-        <button>Submit</button>
+        <button disabled={disable}>Submit</button>
         {error && <div className='error'>{error}</div>}
       </form>
     </div>
