@@ -46,7 +46,7 @@ const SideDrawer = ({ subtask, task }) => {
       }
 
       const res = await axios.post(
-        `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages`,
+        `http://localhost:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages`,
         {
           sender: user?.email,
           content: messageContent,
@@ -88,7 +88,7 @@ const SideDrawer = ({ subtask, task }) => {
 
       // POST request
       const postResponse = await axios.post(
-        `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
+        `http://localhost:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
         {
           sender: user.email,
           content: replyContent,
@@ -117,7 +117,7 @@ const SideDrawer = ({ subtask, task }) => {
 
       // GET request
       const getResponse = await axios.get(
-        `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
+        `http://localhost:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -136,7 +136,7 @@ const SideDrawer = ({ subtask, task }) => {
   const fetchMessages = async () => {
     try {
       const res = await axios.get(
-        `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages`,
+        `http://localhost:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -147,7 +147,7 @@ const SideDrawer = ({ subtask, task }) => {
       for (const message of res.data) {
         try {
           const replyRes = await axios.get(
-            `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${message._id}/replies`,
+            `http://localhost:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${message._id}/replies`,
             {
               headers: {
                 Authorization: `Bearer ${user.token}`,

@@ -12,7 +12,7 @@ export const useLogin = () => {
     setError(null);
 
     try {
-      const response = await axios.post('http://209.38.250.1:4000/api/user/login', {
+      const response = await axios.post('http://localhost:4000/api/user/login', {
         email,
         password,
       });
