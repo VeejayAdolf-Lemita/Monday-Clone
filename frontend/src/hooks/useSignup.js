@@ -12,7 +12,7 @@ export const useSignup = () => {
     setError(null);
 
     try {
-      const response = await axios.post('https://209.38.250.1:4000/api/user/signup', {
+      const response = await axios.post('https://veejay.servehttp.com//api/user/signup', {
         email,
         password,
       });
