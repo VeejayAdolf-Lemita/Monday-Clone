@@ -113,6 +113,7 @@ const SideDrawer = ({ subtask, task }) => {
           },
         },
       );
+      console.log('GET response:', getResponse.data);
     } catch (error) {
       console.error('Error adding reply:', error);
     }
@@ -164,6 +165,7 @@ const SideDrawer = ({ subtask, task }) => {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
+      // event.preventDefault();
       addMessageToSubtask();
     }
   };

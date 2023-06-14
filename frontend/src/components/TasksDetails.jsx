@@ -68,6 +68,7 @@ const TaskDetails = ({ task, subtasks }) => {
       setNewOwnerEmail('');
       alert(`Ownership transferred to ${newOwnerEmail} successfully`);
       handleCloseModal2();
+      console.log(response.data);
       setIsLoading(false);
     } catch (err) {
       setFileId('');
@@ -114,12 +115,13 @@ const TaskDetails = ({ task, subtasks }) => {
         multiselect: true,
         callbackFunction: (data) => {
           if (data.action === 'cancel') {
+            console.log('User clicked cancel/close button');
             setToken(newToken);
           }
           if (data.action === 'picked') {
             setFileId(data.docs[0]['id']);
             handleOpenModal2();
-          }
+          } else console.log(data);
         },
       });
     } catch (error) {
@@ -148,12 +150,14 @@ const TaskDetails = ({ task, subtasks }) => {
         const response = await axios.get('http://localhost:4000/api/user/');
         const data = Array.isArray(response.data) ? response.data : [response.data];
         setUsers(data);
+        console.log(data);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
     };
     fetchUsers();
   }, []);
+  console.log(tasks);
 
   useEffect(() => {
     const getSubtasks = async () => {
@@ -164,6 +168,7 @@ const TaskDetails = ({ task, subtasks }) => {
           },
         });
         const data = Array.isArray(response.data) ? response.data : [response.data];
+        console.log(data, 'response');
         dispatch({ type: 'GET_SUBTASK', payload: { data, taskId: task.id } });
       } catch (err) {
         console.error(err.response.data);
@@ -228,6 +233,7 @@ const TaskDetails = ({ task, subtasks }) => {
   const editSubtask = (subtaskId) => {
     const subtaskToEdit = subtasks.find((subtask) => subtask.id === subtaskId);
     if (subtaskToEdit) {
+      console.log(subtaskToEdit);
       setName(subtaskToEdit.name);
       setMember(subtaskToEdit.member);
       setDescription(subtaskToEdit.description);
