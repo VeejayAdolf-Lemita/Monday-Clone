@@ -66,27 +66,19 @@ const SideDrawer = ({ subtask, task }) => {
           subtaskId: subtask.id,
         },
       });
-
-      // Reload messages
       fetchMessages();
-
-      // Clear the message content
       setMessageContent('');
     } catch (error) {
       console.error('Error adding message:', error);
-      // Handle the error appropriately
     }
   };
 
   const addReplyToMessage = async (messageId) => {
     try {
       if (!replyContent) {
-        // Validate if reply content is provided
         console.error('Reply content is required');
         return;
       }
-
-      // POST request
       const postResponse = await axios.post(
         `http://localhost:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
         {
@@ -99,8 +91,6 @@ const SideDrawer = ({ subtask, task }) => {
           },
         },
       );
-
-      // Dispatch action to add the reply to the message
       dispatch({
         type: 'ADD_REPLY_TO_MESSAGE',
         payload: {
@@ -110,7 +100,6 @@ const SideDrawer = ({ subtask, task }) => {
           messageId,
         },
       });
-      // Clear the reply content
       setReplyContent('');
       fetchMessages();
       setSelectedMessageId(null);
@@ -124,12 +113,8 @@ const SideDrawer = ({ subtask, task }) => {
           },
         },
       );
-
-      // Handle the GET response as needed
-      console.log('GET response:', getResponse.data);
     } catch (error) {
       console.error('Error adding reply:', error);
-      // Handle the error appropriately
     }
   };
 
@@ -154,8 +139,6 @@ const SideDrawer = ({ subtask, task }) => {
               },
             },
           );
-
-          // Update the replies for the message
           const updatedMessage = {
             ...message,
             replies: replyRes.data,
@@ -172,18 +155,15 @@ const SideDrawer = ({ subtask, task }) => {
           });
         } catch (error) {
           console.error(`Error fetching replies for message ${message._id}:`, error);
-          // Handle the error appropriately
         }
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
-      // Handle the error appropriately
     }
   };
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      // event.preventDefault();
       addMessageToSubtask();
     }
   };

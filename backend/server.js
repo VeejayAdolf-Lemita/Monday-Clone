@@ -85,7 +85,7 @@ app.post('/transfer-ownership', async (req, res) => {
       },
     });
 
-    console.log('Ownership transferred successfully');
+    alert('Ownership transferred successfully');
     res.send({ message: 'Ownership transferred successfully' });
   } catch (err) {
     console.log(`Error transferring ownership: ${err.message}`);
