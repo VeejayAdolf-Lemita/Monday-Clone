@@ -225,7 +225,7 @@ const SideDrawer = ({ subtask, task }) => {
           <div style={{ height: '60vh', overflow: 'auto' }}>
             {subtask && subtask.messages && subtask.messages.length > 0 ? (
               subtask.messages.map((message) => (
-                <div style={{ margin: '0 auto 16px auto', maxWidth: '40vw' }}>
+                <div style={{ margin: '0 auto 16px auto', maxWidth: '40vw' }} key={message._id}>
                   <Box sx={{ border: '1px solid #00000054', borderRadius: '4px', padding: '8px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                       <AccountCircleIcon sx={{ fontSize: 50, color: '#3e753e' }} />
@@ -280,7 +280,7 @@ const SideDrawer = ({ subtask, task }) => {
                       </div>
                     )}
                     {selectedMessageId === message._id && (
-                      <div>
+                      <div key={message._id}>
                         <TextField
                           label='Reply to message...'
                           variant='outlined'
