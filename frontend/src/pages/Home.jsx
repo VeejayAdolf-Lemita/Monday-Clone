@@ -82,7 +82,7 @@ const Home = () => {
             >
               <path
                 fill='#000b76'
-                fill-opacity='1'
+                fillOpacity='1'
                 d='M0,32L360,160L720,224L1080,32L1440,128L1440,320L1080,320L720,320L360,320L0,320Z'
               ></path>
             </svg>
