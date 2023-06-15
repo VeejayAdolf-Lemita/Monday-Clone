@@ -62,103 +62,101 @@ const SubtaskForm = ({ addSubtask }) => {
         <Typography>ADD TASK</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <TextField
-                id='outlined-basic'
-                label='Name'
-                variant='outlined'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                fullWidth
-                required
-                InputLabelProps={{
-                  style: { background: 'white' },
-                }}
-              />
-            </div>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <TextField
+              id='outlined-basic'
+              label='Name'
+              variant='outlined'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              fullWidth
+              required
+              InputLabelProps={{
+                style: { background: 'white' },
+              }}
+            />
+          </div>
+          <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+            <FormControl fullWidth>
+              <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                Person
+              </InputLabel>
+              <Select
+                id='demo-simple-select-label'
+                labelId='demo-simple-select-label'
+                multiple
+                value={member} // Update this line
+                label='Priority'
+                onChange={(e) => setMember(e.target.value)}
+              >
+                {users.map((user) => (
+                  <MenuItem key={user.id} value={user} required>
+                    {user.email}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+          <div>
+            <TextField
+              id='outlined-basic'
+              label='Description'
+              variant='outlined'
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              fullWidth
+              required
+              InputLabelProps={{
+                style: { background: 'white' },
+              }}
+            />
+          </div>
+          <div>
             <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
               <FormControl fullWidth>
                 <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
-                  Person
+                  Priority
                 </InputLabel>
                 <Select
                   id='demo-simple-select-label'
                   labelId='demo-simple-select-label'
-                  multiple
-                  value={member} // Update this line
+                  value={role} // Update this line
                   label='Priority'
-                  onChange={(e) => setMember(e.target.value)}
+                  onChange={(e) => setRole(e.target.value)}
                 >
-                  {users.map((user) => (
-                    <MenuItem key={user.id} value={user} required>
-                      {user.email}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value='Low'>Low</MenuItem>
+                  <MenuItem value='Mid'>Mid</MenuItem>
+                  <MenuItem value='High'>High</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-            <div>
-              <TextField
-                id='outlined-basic'
-                label='Description'
-                variant='outlined'
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                fullWidth
-                required
-                InputLabelProps={{
-                  style: { background: 'white' },
-                }}
-              />
-            </div>
-            <div>
-              <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
-                <FormControl fullWidth>
-                  <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
-                    Priority
-                  </InputLabel>
-                  <Select
-                    id='demo-simple-select-label'
-                    labelId='demo-simple-select-label'
-                    value={role} // Update this line
-                    label='Priority'
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <MenuItem value='Low'>Low</MenuItem>
-                    <MenuItem value='Mid'>Mid</MenuItem>
-                    <MenuItem value='High'>High</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </div>
-            <div>
-              <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
-                <FormControl fullWidth>
-                  <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
-                    Status
-                  </InputLabel>
-                  <Select
-                    id='demo-simple-select-label'
-                    labelId='demo-simple-select-label'
-                    value={status} // Update this line
-                    label='Priority'
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <MenuItem value='Getting Started'>Getting Started</MenuItem>
-                    <MenuItem value='Working on it'>Working on it</MenuItem>
-                    <MenuItem value='Stuck'>Stuck</MenuItem>
-                    <MenuItem value='Done'>Done</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-            </div>
-            <button type='submit' disabled={disable} style={{ cursor: 'pointer' }}>
-              Add Subtask
-            </button>
-          </form>
-        </Typography>
+          </div>
+          <div>
+            <Box sx={{ minWidth: 120, margin: '1rem 0' }}>
+              <FormControl fullWidth>
+                <InputLabel id='demo-simple-select-label' sx={{ background: '#fff' }}>
+                  Status
+                </InputLabel>
+                <Select
+                  id='demo-simple-select-label'
+                  labelId='demo-simple-select-label'
+                  value={status} // Update this line
+                  label='Priority'
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <MenuItem value='Getting Started'>Getting Started</MenuItem>
+                  <MenuItem value='Working on it'>Working on it</MenuItem>
+                  <MenuItem value='Stuck'>Stuck</MenuItem>
+                  <MenuItem value='Done'>Done</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </div>
+          <button type='submit' disabled={disable} style={{ cursor: 'pointer' }}>
+            Add Subtask
+          </button>
+        </form>
       </AccordionDetails>
     </Accordion>
   );
