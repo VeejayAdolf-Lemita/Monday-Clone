@@ -45,7 +45,7 @@ const DashboardList = () => {
           {tasks && tasks.length > 0 ? (
             <div className='tasks'>
               {tasks.map((task) => (
-                <TasksDetails key={task?._id} task={task} subtasks={task?.subtasks} />
+                <TasksDetails key={task?.id} task={task} subtasks={task?.subtasks} />
               ))}
             </div>
           ) : (
