@@ -18,7 +18,7 @@ const DashboardList = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/tasks', {
+        const response = await axios.get('http://209.38.250.1:4000/api/tasks', {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
