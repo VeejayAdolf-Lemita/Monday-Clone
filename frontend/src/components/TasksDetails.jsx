@@ -64,6 +64,7 @@ const TaskDetails = ({ task, subtasks }) => {
           },
         },
       );
+      console.log(response);
       setFileId('');
       setNewOwnerEmail('');
       alert(`Ownership transferred to ${newOwnerEmail} successfully`);
