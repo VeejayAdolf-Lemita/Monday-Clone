@@ -103,17 +103,6 @@ const SideDrawer = ({ subtask, task }) => {
       setReplyContent('');
       fetchMessages();
       setSelectedMessageId(null);
-
-      // GET request
-      const getResponse = await axios.get(
-        `http://209.38.250.1:4000/api/tasks/${task.id}/subtasks/${subtask.id}/messages/${messageId}/replies`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        },
-      );
-      console.log('GET response:', getResponse.data);
     } catch (error) {
       console.error('Error adding reply:', error);
     }

@@ -433,7 +433,7 @@ const TaskDetails = ({ task, subtasks }) => {
               </form>
             </Box>
           </Modal>
-          <Table sx={{ '& tr > *:not(:first-of-type)': { textAlign: 'right' } }}>
+          <Table style={{ '& tr > *:not(:first-child)': { textAlign: 'right' } }}>
             <thead>
               <tr>
                 <th>Name</th>
@@ -501,7 +501,7 @@ const TaskDetails = ({ task, subtasks }) => {
           </Table>
         </>
       ) : (
-        <Table sx={{ '& tr > *:not(:first-of-type)': { textAlign: 'right' } }}>
+        <Table style={{ '& tr > *:not(:first-child)': { textAlign: 'right' } }}>
           <thead>
             <tr>
               <th>Name</th>
