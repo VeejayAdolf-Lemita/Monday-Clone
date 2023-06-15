@@ -519,7 +519,9 @@ const TaskDetails = ({ task, subtasks }) => {
             </tr>
           </thead>
           <tbody>
-            <td>No Tasks Found. Click "ADD TASK" to begin</td>
+            <tr>
+              <td>No Tasks Found. Click "ADD TASK" to begin</td>
+            </tr>
           </tbody>
         </Table>
       )}

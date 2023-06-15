@@ -208,19 +208,20 @@ const SideDrawer = ({ subtask, task }) => {
               />
             </Tabs>
           </AppBar>
-
-          <form>
-            <TextField
-              label='Write an update...'
-              variant='outlined'
-              fullWidth
-              size='small'
-              value={messageContent}
-              sx={{ marginBottom: '5vh' }}
-              onChange={(e) => handleInputChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </form>
+          <div>
+            <form>
+              <TextField
+                label='Write an update...'
+                variant='outlined'
+                fullWidth
+                size='small'
+                value={messageContent}
+                sx={{ marginBottom: '5vh' }}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </form>
+          </div>
           <div style={{ height: '60vh', overflow: 'auto' }}>
             {subtask && subtask.messages && subtask.messages.length > 0 ? (
               subtask.messages.map((message) => (
