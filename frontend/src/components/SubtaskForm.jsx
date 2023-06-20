@@ -156,7 +156,7 @@ const SubtaskForm = ({ addSubtask }) => {
           <button
             type='submit'
             disabled={disable}
-            style={{ cursor: 'pointer', backgroundColor: disable ? 'grey' : 'inherit' }}
+            style={{ cursor: 'pointer', backgroundColor: disable ? 'grey' : 'green' }}
           >
             Add Task
           </button>
