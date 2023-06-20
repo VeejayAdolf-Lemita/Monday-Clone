@@ -2,6 +2,11 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useTasksContext } from '../hooks/useTasksContext';
 import { useAuthContext } from '../hooks/useAuthContext';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 const TaskForm = () => {
   const { dispatch } = useTasksContext();
@@ -9,6 +14,7 @@ const TaskForm = () => {
   const [title, setTitle] = useState('');
   const [error, setError] = useState(null);
   const [disable, setDisable] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +37,7 @@ const TaskForm = () => {
         setError(null);
         dispatch({ type: 'CREATE_TASK', payload: response.data });
         setDisable(false);
+        setShowSuccessAlert(true);
       } else {
         setError(response.data.error);
       }
@@ -38,6 +45,10 @@ const TaskForm = () => {
       console.error(error);
       setError(error.message);
     }
+  };
+
+  const handleAlertClose = () => {
+    setShowSuccessAlert(false);
   };
 
   return (
@@ -72,6 +83,18 @@ const TaskForm = () => {
         <button disabled={disable}>Submit</button>
         {error && <div className='error'>{error}</div>}
       </form>
+      {showSuccessAlert && (
+        <Stack
+          sx={{ position: 'fixed', bottom: 16, right: 16, width: 320, zIndex: 9999 }}
+          spacing={2}
+        >
+          <Alert severity='success' onClose={handleAlertClose}>
+            <AlertTitle>Success</AlertTitle>
+            Your Project Board is added successfully —{' '}
+            <strong>check it out! on Project List</strong>
+          </Alert>
+        </Stack>
+      )}
     </div>
   );
 };

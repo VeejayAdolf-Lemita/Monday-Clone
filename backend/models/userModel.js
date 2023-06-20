@@ -13,9 +13,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    default: 'user',
+  },
 });
 
-userSchema.statics.signup = async function (id, email, password) {
+userSchema.statics.signup = async function (id, email, password, isAdmin = false) {
   // validation
   if (!email || !password) {
     throw Error('All field must be field');
@@ -36,7 +40,9 @@ userSchema.statics.signup = async function (id, email, password) {
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
-  const user = await this.create({ email, password: hash, id });
+  const role = isAdmin ? 'admin' : 'user';
+
+  const user = await this.create({ email, password: hash, id, role });
 
   return user;
 };

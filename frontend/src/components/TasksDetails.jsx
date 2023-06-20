@@ -196,6 +196,11 @@ const TaskDetails = ({ task, subtasks }) => {
 
   const deleteSubtask = async (subtaskId) => {
     try {
+      const confirmed = window.confirm('Are you sure you want to delete this Task?');
+      if (!confirmed) {
+        return; // User clicked cancel, do nothing
+      }
+
       await axios.delete(
         `https://monday-vercel.vercel.app/api/tasks/${task.id}/subtasks/${subtaskId}`,
         {
@@ -426,17 +431,25 @@ const TaskDetails = ({ task, subtasks }) => {
                     </FormControl>
                   </Box>
                 </div>
-                <button
-                  type='submit'
-                  onClick={(e) => {
-                    setBtnDisabled(true); // Disable the button
-                    updateSubtask(e, subtaskId);
-                  }}
-                  disabled={btnDisabled}
-                  style={{ cursor: 'pointer' }}
-                >
-                  Update
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                  <button
+                    onClick={handleClose}
+                    style={{ cursor: 'pointer', background: '#db3c3c' }}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type='submit'
+                    onClick={(e) => {
+                      setBtnDisabled(true); // Disable the button
+                      updateSubtask(e, subtaskId);
+                    }}
+                    disabled={btnDisabled}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Update
+                  </button>
+                </div>
               </form>
             </Box>
           </Modal>

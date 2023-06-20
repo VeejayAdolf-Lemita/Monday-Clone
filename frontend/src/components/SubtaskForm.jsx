@@ -154,7 +154,7 @@ const SubtaskForm = ({ addSubtask }) => {
             </Box>
           </div>
           <button type='submit' disabled={disable} style={{ cursor: 'pointer' }}>
-            Add Subtask
+            Add Task
           </button>
         </form>
       </AccordionDetails>
