@@ -221,6 +221,12 @@ const TaskDetails = ({ task, subtasks }) => {
       return;
     }
 
+    // Display an alert confirmation
+    const confirmDeletion = window.confirm('Are you sure you want to delete this task?');
+    if (!confirmDeletion) {
+      return; // User canceled the deletion
+    }
+
     const response = await fetch('https://monday-vercel.vercel.app/api/tasks/' + task.id, {
       method: 'DELETE',
       headers: {

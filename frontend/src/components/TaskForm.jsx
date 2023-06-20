@@ -5,8 +5,6 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 
 const TaskForm = () => {
   const { dispatch } = useTasksContext();
