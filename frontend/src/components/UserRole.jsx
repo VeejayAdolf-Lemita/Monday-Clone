@@ -37,9 +37,6 @@ const UserRole = () => {
   const [selectedRole, setSelectedRole] = useState('');
   const [userData, setUserData] = useState();
 
-  const storedEmail = localStorage.getItem('email');
-  console.log(storedEmail);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -47,7 +44,6 @@ const UserRole = () => {
           const response = await fetch('https://monday-vercel.vercel.app/api/user');
           const data = await response.json();
           setUserData(data);
-          console.log(data);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
