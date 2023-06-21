@@ -49,21 +49,13 @@ const TaskDetails = ({ task, subtasks }) => {
       '1//04SwRA9OKAaKmCgYIARAAGAQSNwF-L9IrM_Hyeg4rHdhtZ1n_M5vjMuV9VYehTCApNKMJEizTnU5wrxgJy99XiFk-8JJdYm1jWK8';
 
     try {
-      const response = await axios.post(
-        '/transfer-ownership',
-        {
-          fileId: fileId,
-          newOwnerEmail: newOwnerEmail,
-          clientId: clientId,
-          clientSecret: clientSecret,
-          refreshToken: refreshToken,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const response = await axios.post('https://monday-vercel.vercel.app/transfer-ownership', {
+        fileId: fileId,
+        newOwnerEmail: newOwnerEmail,
+        clientId: clientId,
+        clientSecret: clientSecret,
+        refreshToken: refreshToken,
+      });
       console.log(response);
       setFileId('');
       setNewOwnerEmail('');
